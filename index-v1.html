@@ -4,170 +4,125 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI-900 Exam Prep</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
---bg:#0F172A;--surface:#1E293B;--surface2:#334155;--border:#3F4F65;
---text:#F1F5F9;--text2:#94A3B8;
---accent:#818CF8;--accent2:#6366F1;
---green:#76BA99;--red:#FB7185;--amber:#FF8C42;--purple:#C4B5FD;--pink:#F472B6;
---d1:#818CF8;--d2:#76BA99;--d3:#FF8C42;--d4:#F472B6;--d5:#C4B5FD;
---shadow:0 4px 24px rgba(0,0,0,.3);--shadow-sm:0 2px 8px rgba(0,0,0,.2);
---radius:12px;--sidebar-w:220px;--topbar-h:56px
-}
-[data-theme="light"]{
---bg:#FDFDFD;--surface:#FFFFFF;--surface2:#F1F5F9;--border:#E2E8F0;
---text:#0F172A;--text2:#64748B;
---accent:#6366F1;--accent2:#4F46E5;
---green:#059669;--red:#DC2626;--amber:#D97706;--purple:#7C3AED;--pink:#DB2777;
---d1:#6366F1;--d2:#059669;--d3:#D97706;--d4:#DB2777;--d5:#7C3AED;
---shadow:0 4px 24px rgba(0,0,0,.06);--shadow-sm:0 2px 8px rgba(0,0,0,.04)
-}
-body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#242736;--border:#2e3246;--text:#e1e4ed;--text2:#9ca3b8;--accent:#6c8cff;--accent2:#4e6be0;--green:#34d399;--red:#f87171;--orange:#fbbf24;--purple:#a78bfa;--pink:#f472b6;
+--d1:#6c8cff;--d2:#34d399;--d3:#fbbf24;--d4:#f472b6;--d5:#a78bfa;
+--card-front-bg:var(--surface);--card-back-bg:var(--surface2);--btn-got-text:#000;--btn-star-text:#000;--quiz-correct-bg:rgba(52,211,153,.12);--quiz-wrong-bg:rgba(248,113,113,.12);--quiz-selected-bg:rgba(108,140,255,.12)}
+[data-theme="light"]{--bg:#f5f6fa;--surface:#ffffff;--surface2:#eef0f5;--border:#d5d8e0;--text:#1a1d27;--text2:#5a6072;--accent:#4e6be0;--accent2:#3b54c4;--green:#059669;--red:#dc2626;--orange:#d97706;--purple:#7c3aed;--pink:#db2777;
+--d1:#4e6be0;--d2:#059669;--d3:#d97706;--d4:#db2777;--d5:#7c3aed;
+--card-front-bg:#ffffff;--card-back-bg:#eef0f5;--btn-got-text:#fff;--btn-star-text:#fff;--quiz-correct-bg:rgba(5,150,105,.1);--quiz-wrong-bg:rgba(220,38,38,.1);--quiz-selected-bg:rgba(78,107,224,.1)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
 a{color:var(--accent);text-decoration:none}
 
-/* SIDEBAR */
-.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:200;transition:transform .3s}
-.sb-brand{padding:18px 20px;font-weight:700;font-size:1.15rem;color:var(--accent);border-bottom:1px solid var(--border);letter-spacing:-.02em}
-.sb-nav{flex:1;padding:12px 8px;display:flex;flex-direction:column;gap:2px}
-.sb-btn{display:flex;align-items:center;gap:12px;padding:10px 16px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:.88rem;font-family:inherit;transition:.2s;text-align:left}
-.sb-btn:hover{background:var(--surface2);color:var(--text)}
-.sb-btn.active{background:var(--accent);color:#fff}
-.sb-icon{font-size:1.05rem;width:22px;text-align:center}
-.sb-label{font-weight:500}
+/* NAV */
+.nav{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:100}
+.nav-brand{font-weight:700;font-size:1.1rem;color:var(--accent);white-space:nowrap;margin-right:8px}
+.nav-btn{padding:8px 16px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:.9rem;white-space:nowrap;transition:.2s}
+.nav-btn:hover{background:var(--surface2);color:var(--text)}
+.nav-btn.active{background:var(--accent);color:#fff}
 
-/* TOPBAR */
-.topbar{position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:12px;z-index:150}
-.menu-btn{display:none;padding:6px 10px;border:none;background:transparent;color:var(--text);cursor:pointer;font-size:1.3rem}
-.tb-title{font-weight:600;font-size:1.05rem;flex:1}
-.tb-right{display:flex;align-items:center;gap:8px}
-.tb-btn{padding:5px 10px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:.95rem;transition:.2s}
-.tb-btn:hover{border-color:var(--text);color:var(--text)}
-.xp-badge{padding:4px 14px;border-radius:20px;background:linear-gradient(135deg,var(--accent),var(--purple));color:#fff;font-size:.78rem;font-weight:600;letter-spacing:.02em}
-
-/* MAIN */
-.main{margin-left:var(--sidebar-w);margin-top:var(--topbar-h);min-height:calc(100vh - var(--topbar-h))}
-.content{max-width:960px;margin:0 auto;padding:28px 24px}
+/* CONTAINER */
+.container{max-width:900px;margin:0 auto;padding:20px 16px}
 .tab{display:none}.tab.active{display:block}
 
-/* DASHBOARD */
-.dash-section{margin-bottom:28px}
-.dash-section h2{font-size:1.3rem;margin-bottom:4px;font-weight:700}
-.dash-section h3{font-size:1.05rem;margin-bottom:12px;font-weight:600}
-.dash-sub{color:var(--text2);font-size:.9rem;margin-bottom:16px}
-.flow-cards{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-.flow-card{flex:1;min-width:110px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 12px;text-align:center;cursor:pointer;transition:.2s;box-shadow:var(--shadow-sm)}
-.flow-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
-.flow-card .flow-icon{font-size:1.5rem;display:block;margin-bottom:6px}
-.flow-card strong{display:block;font-size:.85rem;margin-bottom:2px}
-.flow-card span:last-child{font-size:.75rem;color:var(--text2)}
-.flow-arrow{color:var(--text2);font-size:1.2rem;font-weight:700}
-.dash-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:28px}
-.dash-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 14px;text-align:center;box-shadow:var(--shadow-sm)}
-.dash-stat .stat-num{font-size:1.7rem;font-weight:700;color:var(--accent)}
-.dash-stat .stat-label{font-size:.78rem;color:var(--text2);margin-top:4px}
-.stat-ring{position:relative;width:70px;height:70px;margin:0 auto 4px}
-.stat-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.stat-ring span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--green)}
-.heat-map{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:320px}
-.heat-day{width:100%;aspect-ratio:1;border-radius:3px;background:var(--surface2);transition:.2s}
-.heat-day.h1{background:color-mix(in srgb,var(--green) 30%,var(--surface2))}.heat-day.h2{background:color-mix(in srgb,var(--green) 55%,var(--surface2))}.heat-day.h3{background:var(--green)}
-
-/* FILTERS */
+/* DOMAIN FILTERS */
 .filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
-.filter-btn{padding:6px 14px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;font-size:.82rem;font-family:inherit;transition:.2s}
+.filter-btn{padding:6px 14px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;font-size:.82rem;transition:.2s}
 .filter-btn:hover{border-color:var(--text2)}
 .filter-btn.active{color:#fff;border-color:transparent}
-.filter-btn[data-d="1"].active{background:var(--d1)}.filter-btn[data-d="2"].active{background:var(--d2)}
-.filter-btn[data-d="3"].active{background:var(--d3)}.filter-btn[data-d="4"].active{background:var(--d4)}
+.filter-btn[data-d="1"].active{background:var(--d1)}.filter-btn[data-d="2"].active{background:var(--d2);color:var(--btn-got-text)}
+.filter-btn[data-d="3"].active{background:var(--d3);color:var(--btn-got-text)}.filter-btn[data-d="4"].active{background:var(--d4);color:var(--btn-got-text)}
 .filter-btn[data-d="5"].active{background:var(--d5)}.filter-btn[data-d="all"].active{background:var(--accent)}
 
 /* FLASHCARDS */
 .fc-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
 .fc-progress{font-size:.85rem;color:var(--text2)}
-.fc-bar{width:100%;height:6px;background:var(--surface2);border-radius:3px;margin-bottom:20px;overflow:hidden}
+.fc-bar{width:100%;height:6px;background:var(--surface2);border-radius:3px;margin-bottom:16px;overflow:hidden}
 .fc-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
-.card-scene{perspective:900px;width:100%;max-width:620px;margin:0 auto 24px;min-height:280px}
-.card-flip{width:100%;min-height:280px;position:relative;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.card-scene{perspective:800px;width:100%;max-width:600px;margin:0 auto 20px;min-height:260px}
+.card-flip{width:100%;min-height:260px;position:relative;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
 .card-flip.flipped{transform:rotateY(180deg)}
-.card-face{position:absolute;width:100%;min-height:280px;backface-visibility:hidden;border-radius:16px;padding:36px 28px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;box-shadow:var(--shadow)}
-.card-front{background:var(--surface);border:1px solid var(--border)}
-.card-back{background:var(--surface2);border:1px solid var(--border);transform:rotateY(180deg)}
-.card-domain{font-size:.72rem;padding:4px 12px;border-radius:12px;color:#fff;margin-bottom:14px;font-weight:600}
-.card-q{font-size:1.2rem;font-weight:600;line-height:1.55}
-.card-a{font-size:1.05rem;line-height:1.55;color:var(--text)}
-.card-num{font-size:.75rem;color:var(--text2);margin-top:14px}
+.card-face{position:absolute;width:100%;min-height:260px;backface-visibility:hidden;border-radius:16px;padding:32px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.card-front{background:var(--card-front-bg);border:1px solid var(--border)}
+.card-back{background:var(--card-back-bg);border:1px solid var(--border);transform:rotateY(180deg)}
+.card-domain{font-size:.75rem;padding:4px 12px;border-radius:12px;color:#fff;margin-bottom:12px;font-weight:600}
+.card-q{font-size:1.15rem;font-weight:600;line-height:1.5}
+.card-a{font-size:1.05rem;line-height:1.5;color:var(--text)}
+.card-num{font-size:.75rem;color:var(--text2);margin-top:12px}
 .fc-actions{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
-.fc-btn{padding:12px 28px;border:none;border-radius:10px;font-size:1rem;cursor:pointer;font-weight:600;font-family:inherit;transition:.2s}
+.fc-btn{padding:12px 28px;border:none;border-radius:10px;font-size:1rem;cursor:pointer;font-weight:600;transition:.2s}
 .btn-again{background:var(--red);color:#fff}.btn-again:hover{opacity:.85}
-.btn-got{background:var(--green);color:#fff}.btn-got:hover{opacity:.85}
-.btn-star{background:var(--amber);color:#fff;padding:12px 16px}.btn-star:hover{opacity:.85}
+.btn-got{background:var(--green);color:var(--btn-got-text)}.btn-got:hover{opacity:.85}
+.btn-star{background:var(--orange);color:var(--btn-star-text);padding:12px 16px}.btn-star:hover{opacity:.85}
 .fc-mode{display:flex;gap:8px;flex-wrap:wrap}
-.fc-mode-btn{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:.82rem;font-family:inherit;transition:.2s}
+.fc-mode-btn{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:.82rem;transition:.2s}
 .fc-mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 
 /* QUIZ */
 .quiz-setup{text-align:center;padding:40px 0}
-.quiz-setup h2{margin-bottom:12px;font-size:1.4rem}
+.quiz-setup h2{margin-bottom:16px;font-size:1.4rem}
 .quiz-setup p{color:var(--text2);margin-bottom:24px}
 .quiz-opt{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
-.quiz-opt button{padding:12px 24px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);cursor:pointer;font-size:1rem;font-family:inherit;transition:.2s}
+.quiz-opt button{padding:12px 24px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);cursor:pointer;font-size:1rem;transition:.2s}
 .quiz-opt button:hover{border-color:var(--accent)}
 .quiz-opt button.active{border-color:var(--accent);background:var(--accent);color:#fff}
-.quiz-start{padding:14px 40px;border:none;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer;font-size:1.05rem;font-weight:600;font-family:inherit;transition:.2s}
-.quiz-start:hover{background:var(--accent2)}.quiz-start:disabled{opacity:.4;cursor:not-allowed}
-.quiz-q{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:var(--shadow-sm)}
-.quiz-q h3{margin-bottom:16px;font-size:1.05rem;line-height:1.55;word-wrap:break-word}
+.quiz-start{padding:14px 40px;border:none;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer;font-size:1.05rem;font-weight:600;transition:.2s}
+.quiz-start:hover{background:var(--accent2)}
+.quiz-start:disabled{opacity:.4;cursor:not-allowed}
+.quiz-q{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+.quiz-q h3{margin-bottom:16px;font-size:1.05rem;line-height:1.5;word-wrap:break-word}
 .quiz-q .opts label{display:block;padding:12px 16px;margin-bottom:8px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:.2s}
 .quiz-q .opts label:hover{border-color:var(--text2)}
-.quiz-q .opts label.selected{border-color:var(--accent);background:rgba(99,102,241,.1)}
-.quiz-q .opts label.correct{border-color:var(--green);background:rgba(118,186,153,.15)}
-.quiz-q .opts label.wrong{border-color:var(--red);background:rgba(251,113,133,.12)}
+.quiz-q .opts label.selected{border-color:var(--accent);background:var(--quiz-selected-bg)}
+.quiz-q .opts label.correct{border-color:var(--green);background:var(--quiz-correct-bg)}
+.quiz-q .opts label.wrong{border-color:var(--red);background:var(--quiz-wrong-bg)}
 .quiz-q .explanation{margin-top:16px;padding:16px;background:var(--surface2);border-radius:10px;font-size:.92rem;line-height:1.6;color:var(--text2)}
-.quiz-score{text-align:center;padding:32px;background:var(--surface);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.quiz-score{text-align:center;padding:32px;background:var(--surface);border-radius:16px;border:1px solid var(--border)}
 .quiz-score h2{font-size:2rem;margin-bottom:8px}
 .quiz-score .pass{color:var(--green)}.quiz-score .fail{color:var(--red)}
 .quiz-score p{color:var(--text2);margin-bottom:20px}
 .quiz-nav{display:flex;gap:12px;justify-content:center;margin-top:16px}
-.quiz-nav button{padding:10px 24px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;font-family:inherit;transition:.2s}
+.quiz-nav button{padding:10px 24px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;transition:.2s}
 .quiz-nav button:hover{border-color:var(--accent)}
 .quiz-pbar{width:100%;height:6px;background:var(--surface2);border-radius:3px;margin-bottom:20px;overflow:hidden}
 .quiz-pbar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
 
 /* MIND MAPS */
 .mm-section{margin-bottom:16px}
-.mm-header{display:flex;align-items:center;gap:12px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:.2s;box-shadow:var(--shadow-sm)}
-.mm-header:hover{border-color:var(--text2);transform:translateY(-1px)}
+.mm-header{display:flex;align-items:center;gap:12px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:.2s}
+.mm-header:hover{border-color:var(--text2)}
 .mm-header h3{flex:1;font-size:1rem}
 .mm-header .arrow{transition:transform .3s;color:var(--text2)}
 .mm-header.open .arrow{transform:rotate(90deg)}
-.mm-body{display:none;margin-top:8px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface)}
+.mm-body{display:none;margin-top:8px;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:var(--surface)}
 .mm-body.open{display:block}
 .mm-body svg{width:100%;height:600px}
 .mm-body svg text{fill:var(--text)!important;font-size:14px!important}
+.mm-body svg .markmap-node circle{fill:var(--surface2)!important;stroke:var(--accent)!important}
 .mm-body svg .markmap-link{stroke-opacity:.6!important}
 
+/* THEME TOGGLE */
+.theme-toggle{margin-left:auto;padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:1rem;transition:.2s;white-space:nowrap;flex-shrink:0}
+.theme-toggle:hover{border-color:var(--text);color:var(--text)}
+
 /* PROGRESS */
-.prog-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+.prog-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
 .prog-card h3{font-size:1rem;margin-bottom:12px}
-.prog-bar-wrap{margin-bottom:12px}
-.prog-bar-label{display:flex;justify-content:space-between;font-size:.82rem;color:var(--text2);margin-bottom:5px}
+.prog-bar-wrap{margin-bottom:10px}
+.prog-bar-label{display:flex;justify-content:space-between;font-size:.82rem;color:var(--text2);margin-bottom:4px}
 .prog-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
 .prog-bar-fill{height:100%;border-radius:4px;transition:width .3s}
 .prog-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;text-align:center;box-shadow:var(--shadow-sm)}
-.stat-card .stat-num{font-size:1.8rem;font-weight:700;color:var(--accent)}
-.stat-card .stat-label{font-size:.82rem;color:var(--text2)}
-.btn-reset{padding:10px 24px;border:1px solid var(--red);border-radius:8px;background:transparent;color:var(--red);cursor:pointer;font-size:.9rem;font-family:inherit;transition:.2s}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.stat-num{font-size:1.8rem;font-weight:700;color:var(--accent)}
+.stat-label{font-size:.82rem;color:var(--text2)}
+.btn-reset{padding:10px 24px;border:1px solid var(--red);border-radius:8px;background:transparent;color:var(--red);cursor:pointer;font-size:.9rem;transition:.2s}
 .btn-reset:hover{background:var(--red);color:#fff}
 
 /* CHEATSHEETS */
-.cs-search{width:100%;padding:10px 16px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-size:.92rem;font-family:inherit;margin-bottom:16px;outline:none;transition:.2s}
-.cs-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
-.cs-search::placeholder{color:var(--text2)}
 .cs-section{margin-bottom:12px}
-.cs-header{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:.2s;box-shadow:var(--shadow-sm)}
+.cs-header{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:.2s}
 .cs-header:hover{border-color:var(--text2)}
 .cs-header h3{flex:1;font-size:.95rem}
 .cs-body{display:none;padding:20px;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;margin-top:-12px;font-size:.9rem;line-height:1.7}
@@ -179,62 +134,27 @@ a{color:var(--accent);text-decoration:none}
 .cs-body ul{padding-left:20px;margin:8px 0}
 .cs-body strong{color:var(--accent)}
 
-/* ZEN MODE */
-body.zen .sidebar{transform:translateX(-100%)}
-body.zen .topbar{left:0}
-body.zen .topbar .tb-title,body.zen .topbar .xp-badge{display:none}
-body.zen .main{margin-left:0}
-
-/* MOBILE */
-@media(max-width:768px){
-.sidebar{top:auto;bottom:0;left:0;right:0;width:100%;height:60px;flex-direction:row;border-right:none;border-top:1px solid var(--border)}
-.sb-brand{display:none}
-.sb-nav{flex-direction:row;padding:4px 8px;gap:0;justify-content:space-around;align-items:center}
-.sb-btn{flex-direction:column;gap:2px;padding:6px 8px;font-size:.65rem;align-items:center;justify-content:center}
-.sb-icon{font-size:1.15rem;width:auto}
-.sb-label{font-size:.6rem}
-.topbar{left:0}
-.main{margin-left:0;margin-bottom:60px}
-.content{padding:16px 14px}
-.card-face{padding:24px 16px;min-height:240px}.card-q{font-size:1rem}.card-a{font-size:.95rem}
-.fc-btn{padding:10px 20px;font-size:.9rem}
-.flow-arrow{display:none}
-.flow-cards{gap:6px}
-.flow-card{min-width:70px;padding:12px 8px}
-body.zen .sidebar{transform:translateY(100%)}
-body.zen .main{margin-bottom:0}
-.menu-btn{display:none}
+@media(max-width:600px){
+.card-face{padding:24px 16px;min-height:220px}.card-q{font-size:1rem}.card-a{font-size:.95rem}
+.fc-btn{padding:10px 20px;font-size:.9rem}.nav{gap:4px;padding:10px 12px}.nav-btn{padding:6px 12px;font-size:.82rem}
+.theme-toggle{padding:4px 8px;font-size:.9rem}
 }
 </style>
 </head>
 <body>
-<aside class="sidebar" id="sidebar">
-<div class="sb-brand">📘 AI-900</div>
-<nav class="sb-nav">
-<button class="sb-btn active" data-tab="dashboard"><span class="sb-icon">📊</span><span class="sb-label">Dashboard</span></button>
-<button class="sb-btn" data-tab="flashcards"><span class="sb-icon">🗂️</span><span class="sb-label">Flashcards</span></button>
-<button class="sb-btn" data-tab="quiz"><span class="sb-icon">❓</span><span class="sb-label">Quiz</span></button>
-<button class="sb-btn" data-tab="mindmaps"><span class="sb-icon">🧠</span><span class="sb-label">Mind Maps</span></button>
-<button class="sb-btn" data-tab="cheatsheets"><span class="sb-icon">📖</span><span class="sb-label">Cheat Sheets</span></button>
-<button class="sb-btn" data-tab="progress"><span class="sb-icon">📈</span><span class="sb-label">Progress</span></button>
+<nav class="nav">
+<span class="nav-brand">AI-900</span>
+<button class="nav-btn active" data-tab="flashcards">Flashcards</button>
+<button class="nav-btn" data-tab="quiz">Quiz</button>
+<button class="nav-btn" data-tab="mindmaps">Mind Maps</button>
+<button class="nav-btn" data-tab="progress">Progress</button>
+<button class="nav-btn" data-tab="cheatsheets">Cheat Sheets</button>
+<button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode">🌙</button>
 </nav>
-</aside>
+<div class="container">
 
-<header class="topbar" id="topbar">
-<div class="tb-title" id="tb-title">Dashboard</div>
-<div class="tb-right">
-<div class="xp-badge" id="xp-badge">0 XP</div>
-<button class="tb-btn" id="zen-toggle" title="Zen Mode">🧘</button>
-<button class="tb-btn" id="theme-toggle" title="Toggle theme">🌙</button>
-</div>
-</header>
-
-<main class="main" id="main">
-<div class="content">
-
-<div id="dashboard" class="tab active"></div>
-
-<div id="flashcards" class="tab">
+<!-- FLASHCARDS TAB -->
+<div id="flashcards" class="tab active">
 <div class="filters" id="fc-filters"></div>
 <div class="fc-controls">
 <div class="fc-mode">
@@ -245,24 +165,44 @@ body.zen .main{margin-bottom:0}
 <div class="fc-progress" id="fc-count"></div>
 </div>
 <div class="fc-bar"><div class="fc-bar-fill" id="fc-bar"></div></div>
-<div class="card-scene"><div class="card-flip" id="card-flip">
+<div class="card-scene" id="card-scene">
+<div class="card-flip" id="card-flip">
 <div class="card-face card-front"><div class="card-domain" id="card-domain"></div><div class="card-q" id="card-q"></div><div class="card-num" id="card-num"></div></div>
 <div class="card-face card-back"><div class="card-a" id="card-a"></div></div>
-</div></div>
+</div>
+</div>
 <div class="fc-actions">
-<button class="fc-btn btn-again" id="btn-again">✗ Again</button>
-<button class="fc-btn btn-star" id="btn-star">⭐ Star</button>
-<button class="fc-btn btn-got" id="btn-got">✓ Got it</button>
+<button class="fc-btn btn-again" id="btn-again" title="Review again">✗ Again</button>
+<button class="fc-btn btn-star" id="btn-star" title="Star card">⭐</button>
+<button class="fc-btn btn-got" id="btn-got" title="Got it">✓ Got it</button>
 </div>
 </div>
 
-<div id="quiz" class="tab"><div class="filters" id="qz-filters"></div><div id="quiz-area"></div></div>
-<div id="mindmaps" class="tab"><div id="mm-area"></div></div>
-<div id="progress" class="tab"><div class="prog-stats" id="prog-stats"></div><div id="prog-bars"></div><button class="btn-reset" id="btn-reset">Reset All Progress</button></div>
-<div id="cheatsheets" class="tab"><input type="text" class="cs-search" id="cs-search" placeholder="Search cheat sheets…"><div class="filters" id="cs-filters"></div><div id="cs-area"></div></div>
+<!-- QUIZ TAB -->
+<div id="quiz" class="tab">
+<div class="filters" id="qz-filters"></div>
+<div id="quiz-area"></div>
+</div>
+
+<!-- MIND MAPS TAB -->
+<div id="mindmaps" class="tab">
+<div id="mm-area"></div>
+</div>
+
+<!-- PROGRESS TAB -->
+<div id="progress" class="tab">
+<div class="prog-stats" id="prog-stats"></div>
+<div id="prog-bars"></div>
+<button class="btn-reset" id="btn-reset">Reset All Progress</button>
+</div>
+
+<!-- CHEATSHEETS TAB -->
+<div id="cheatsheets" class="tab">
+<div class="filters" id="cs-filters"></div>
+<div id="cs-area"></div>
+</div>
 
 </div>
-</main>
 <script>
 // ========== DATA ==========
 const DOMAINS=[
@@ -272,6 +212,7 @@ const DOMAINS=[
 {id:4,name:"NLP on Azure",weight:"15–20%",color:"var(--d4)"},
 {id:5,name:"Generative AI on Azure",weight:"20–25%",color:"var(--d5)"}
 ];
+
 const FLASHCARDS=[
 {id:1,d:1,q:"What are the 5 common AI workload types?",a:"Computer Vision, NLP, Document Processing, Generative AI, Knowledge Mining"},
 {id:2,d:1,q:"Which AI workload: 'Detect defective parts on an assembly line from camera images'?",a:"Computer Vision (object detection)"},
@@ -416,6 +357,7 @@ const FLASHCARDS=[
 {id:141,d:5,q:"How long does Azure OpenAI retain data for abuse monitoring?",a:"30 days by default. Can be reduced/removed with Microsoft approval."},
 {id:142,d:5,q:"GPT-4 vs GPT-4o: key difference?",a:"GPT-4o is optimized — faster and cheaper with similar capabilities. GPT-4o mini is smallest/cheapest."}
 ];
+
 const QUIZ_QUESTIONS=[
 {d:1,q:"Your company analyzes customer support emails to determine if customers are happy or unhappy. Which AI workload type is this?",opts:["Computer Vision","Natural Language Processing","Document Processing","Generative AI"],ans:1,exp:"Analyzing sentiment of text is NLP. Computer Vision is for images. Document Processing extracts structured fields. Generative AI creates content."},
 {d:1,q:"An AI model performs significantly better for one demographic group than another. Which Responsible AI principle is violated?",opts:["Transparency","Accountability","Fairness","Reliability & Safety"],ans:2,exp:"Fairness requires equitable treatment. Different performance across demographics = bias = Fairness violation."},
@@ -438,7 +380,7 @@ const QUIZ_QUESTIONS=[
 {d:4,q:"Identify all people, organizations, and locations in news articles. Which feature?",opts:["Sentiment analysis","Key phrase extraction","Named entity recognition (NER)","Language detection"],ans:2,exp:"NER identifies and categorizes entities: Person, Organization, Location, Date."},
 {d:4,q:"Convert spoken Japanese to spoken English in real time. Which service?",opts:["Azure AI Translator","Azure AI Language","Azure AI Speech — Speech Translation","Azure AI Speech — STT"],ans:2,exp:"Speech Translation converts spoken audio between languages. Translator is for written text only."},
 {d:4,q:"Build a bot that answers common questions from FAQ documents. Which feature?",opts:["Sentiment analysis","CLU","Question answering","Text summarization"],ans:2,exp:"Question Answering builds a knowledge base from FAQs and answers user questions."},
-{id:4,q:"Understand commands like 'turn on living room lights' — identify intent and entities. Which feature?",opts:["Question Answering","CLU","Speech-to-Text","Key Phrase Extraction"],ans:1,exp:"CLU understands intents (TurnOn) and extracts entities (room=living room, device=lights)."},
+{d:4,q:"Understand commands like 'turn on living room lights' — identify intent and entities. Which feature?",opts:["Question Answering","CLU","Speech-to-Text","Key Phrase Extraction"],ans:1,exp:"CLU understands intents (TurnOn) and extracts entities (room=living room, device=lights)."},
 {d:4,q:"Which is a pre-built Azure AI Language feature (no training needed)?",opts:["CLU","Custom text classification","Question answering","Sentiment analysis"],ans:3,exp:"Sentiment analysis is pre-built — works immediately. CLU, custom classification, and QA need your data."},
 {d:5,q:"Deploy GPT-4 with enterprise security, data not used for training, private networking. Which service?",opts:["OpenAI (openai.com)","Azure OpenAI Service","Azure AI Language","Azure ML"],ans:1,exp:"Azure OpenAI = enterprise security, data not used for training, private endpoints."},
 {d:5,q:"Provide 3 example input-output pairs in a prompt to guide the model. What technique?",opts:["Zero-shot","Few-shot","Fine-tuning","Chain of thought"],ans:1,exp:"Few-shot = including examples in the prompt. Zero-shot = no examples. Fine-tuning = additional training."},
@@ -451,6 +393,7 @@ const QUIZ_QUESTIONS=[
 {d:5,q:"Users type natural language questions and the system finds semantically similar documents, even without exact keyword matches. Which model type?",opts:["GPT-4","DALL-E","Embeddings","Whisper"],ans:2,exp:"Embeddings create vector representations capturing semantic meaning. Similar meaning = similar vectors = semantic search."},
 {d:5,q:"What are the four content filter severity levels in Azure OpenAI, from least to most severe?",opts:["None, Low, Medium, High","Safe, Low, Medium, High","Info, Warning, Error, Critical","Green, Yellow, Orange, Red"],ans:1,exp:"Azure OpenAI filters use Safe, Low, Medium, High severity levels for each category (violence, hate, sexual, self-harm)."}
 ];
+
 const CHEATSHEETS=[
 {d:1,title:"AI Workload Types",content:`<table><tr><th>Workload</th><th>What It Does</th><th>Examples</th></tr><tr><td><strong>Computer Vision</strong></td><td>Interpret images/video</td><td>Classification, object detection, facial recognition, OCR</td></tr><tr><td><strong>NLP</strong></td><td>Understand/generate language</td><td>Sentiment, key phrases, translation, speech</td></tr><tr><td><strong>Document Processing</strong></td><td>Extract info from documents</td><td>Invoice/receipt recognition, ID extraction</td></tr><tr><td><strong>Generative AI</strong></td><td>Create new content</td><td>Chatbots, content creation, code gen, image gen</td></tr><tr><td><strong>Knowledge Mining</strong></td><td>Index & search unstructured data</td><td>Azure AI Search</td></tr></table>`},
 {d:1,title:"Responsible AI Principles",content:`<table><tr><th>Principle</th><th>Description</th></tr><tr><td><strong>Fairness</strong></td><td>No biased outcomes for different groups</td></tr><tr><td><strong>Reliability & Safety</strong></td><td>Works correctly, handles edge cases safely</td></tr><tr><td><strong>Privacy & Security</strong></td><td>Data protected, proper access controls</td></tr><tr><td><strong>Inclusiveness</strong></td><td>Accessible to all regardless of disability</td></tr><tr><td><strong>Transparency</strong></td><td>Users understand decisions and limitations</td></tr><tr><td><strong>Accountability</strong></td><td>HUMANS oversee AI, governance in place</td></tr></table><h4>Traps</h4><ul><li>Fairness ≠ treating everyone identically</li><li>Transparency ≠ open-sourcing the model</li><li>PEOPLE are accountable, not the AI</li><li>Privacy ≠ not collecting any data</li></ul>`},
@@ -466,42 +409,248 @@ const CHEATSHEETS=[
 {d:5,title:"Azure OpenAI & Azure AI Foundry",content:`<table><tr><th>Factor</th><th>Azure OpenAI</th><th>Public OpenAI</th></tr><tr><td>Data privacy</td><td>NOT used for training</td><td>May be used</td></tr><tr><td>Compliance</td><td>SOC 2, HIPAA, GDPR</td><td>Limited</td></tr><tr><td>Networking</td><td>Private endpoints</td><td>Public only</td></tr><tr><td>Content filters</td><td>Built-in, configurable</td><td>Basic moderation</td></tr><tr><td>Access control</td><td>Azure RBAC</td><td>API key only</td></tr></table><h4>Azure AI Foundry</h4><ul><li>Unified portal for AI app development</li><li><strong>Model catalog</strong>: OpenAI, Meta, Mistral, Microsoft, Hugging Face</li><li><strong>Playground</strong>: test prompts interactively</li><li><strong>Prompt flow</strong>: build LLM pipelines</li><li><strong>Content safety</strong>: 4 categories (violence, hate, sexual, self-harm)</li><li>Filters on BOTH input and output</li></ul>`},
 {d:5,title:"Prompt Engineering & Hallucination Reduction",content:`<table><tr><th>Technique</th><th>Description</th></tr><tr><td><strong>System message</strong></td><td>Set role, constraints</td></tr><tr><td><strong>Few-shot</strong></td><td>Examples in prompt</td></tr><tr><td><strong>Chain of thought</strong></td><td>"Show reasoning step by step"</td></tr><tr><td><strong>Temperature</strong></td><td>Low=factual, High=creative</td></tr></table><h4>Reduce Hallucinations</h4><table><tr><th>Technique</th><th>How</th></tr><tr><td><strong>RAG</strong></td><td>Ground in real documents (primary technique)</td></tr><tr><td>System message</td><td>"Only answer from provided data"</td></tr><tr><td>Low temperature</td><td>More deterministic</td></tr><tr><td>Fine-tuning</td><td>Domain-specific training</td></tr></table>`}
 ];
+
 const MINDMAPS=[
-{id:1,title:"AI Workloads & Responsible AI",color:"var(--d1)",md:`# AI Workloads & Considerations\n## AI Workload Types\n### Computer Vision\n- Image classification\n- Object detection\n- OCR\n- Facial detection\n### NLP\n- Sentiment analysis\n- Key phrase extraction\n- Entity recognition\n- Speech recognition/synthesis\n- Translation\n### Document Processing\n- Invoice/receipt extraction\n- ID document processing\n- Custom form extraction\n### Generative AI\n- Text generation (GPT)\n- Image generation (DALL-E)\n- Code generation\n- Conversational AI\n### Knowledge Mining\n- Azure AI Search\n- Index & search documents\n## Responsible AI Principles\n### Fairness\n- No biased outcomes\n- Equal treatment across groups\n### Reliability & Safety\n- Works under expected conditions\n- Handles edge cases\n### Privacy & Security\n- Data protection\n- Access controls\n### Inclusiveness\n- Accessible to all\n- Regardless of disability\n### Transparency\n- Users understand decisions\n- Disclose AI interactions\n### Accountability\n- HUMANS oversee AI\n- Governance frameworks`},
-{id:2,title:"Machine Learning on Azure",color:"var(--d2)",md:`# Machine Learning on Azure\n## ML Techniques\n### Regression (Supervised)\n- Predicts numbers\n- Price, temperature, count\n### Classification (Supervised)\n- Predicts categories\n- Binary: yes/no, spam/not\n- Multi-class: type A/B/C\n### Clustering (Unsupervised)\n- Groups similar data\n- No predefined labels\n- Customer segmentation\n## Core Concepts\n### Features & Labels\n- Feature = input variable\n- Label = what you predict\n- Clustering has NO label\n### Dataset Splits\n- Training set (learn patterns)\n- Validation set (tune/prevent overfit)\n- Test set (final evaluation)\n### Deep Learning\n- Neural networks, multiple layers\n- More data, more compute\n- Best for images, text, audio\n### Transformer Architecture\n- Self-attention mechanism\n- Parallel processing\n- Foundation of GPT, BERT\n## Azure ML Capabilities\n### AutoML\n- No code required\n- Tries multiple algorithms\n- Classification, Regression, Forecasting\n### Designer\n- Drag-and-drop visual ML\n### Notebooks\n- Custom Python/R code\n### Deployment\n- Managed online endpoints\n- Batch endpoints\n- Model registry`},
-{id:3,title:"Computer Vision on Azure",color:"var(--d3)",md:`# Computer Vision on Azure\n## Task Types\n### Image Classification\n- One label for whole image\n- "This is a cat"\n### Object Detection\n- Objects + bounding boxes\n- "Car at (x,y,w,h)"\n- Can count objects\n### OCR\n- Extract text from images\n- Printed & handwritten\n- Read API\n### Facial Detection\n- Face locations\n- Attributes: glasses, head pose\n- Verification (1:1)\n- Identification (1:many)\n## Azure Services\n### Azure AI Vision\n- Image analysis & captions\n- OCR (Read API)\n- Object detection\n- Spatial analysis (video)\n- Smart cropping\n### Azure AI Face\n- Face detection\n- Face attributes\n- Face verification (1:1)\n- Face identification (1:many, approval required)\n- Emotion detection RETIRED\n### Azure AI Document Intelligence\n- Structured extraction\n- Pre-built: invoices, receipts, IDs\n- Custom models\n- Key-value pairs & tables`},
-{id:4,title:"NLP on Azure",color:"var(--d4)",md:`# NLP on Azure\n## NLP Capabilities\n### Key Phrase Extraction\n- Main topics (flat list)\n### Entity Recognition (NER)\n- Entities WITH categories\n- Person, Org, Location, Date\n### Sentiment Analysis\n- Positive / Negative / Neutral\n- Opinion mining (aspect-based)\n### Speech Recognition (STT)\n- Audio to Text\n### Speech Synthesis (TTS)\n- Text to Audio\n### Translation\n- Text: Azure AI Translator\n- Speech: Azure AI Speech\n## Azure Services\n### Azure AI Language\n#### Pre-built (no training)\n- Sentiment analysis\n- Key phrase extraction\n- NER & entity linking\n- Language detection\n- Text summarization\n#### Custom (your data)\n- Question Answering\n- CLU (intents + entities)\n- Custom classification\n- Custom NER\n### Azure AI Speech\n- Speech-to-Text\n- Text-to-Speech\n- Speech Translation\n- Speaker Recognition\n- Keyword Recognition\n- Intent Recognition\n### Azure AI Translator\n- Text translation\n- Document translation`},
-{id:5,title:"Generative AI on Azure",color:"var(--d5)",md:`# Generative AI on Azure\n## Models\n### GPT\n- Text, code, reasoning\n- GPT-3.5, GPT-4, GPT-4o\n### DALL-E\n- Images from text\n### Whisper\n- Speech-to-text\n### Embeddings\n- Vector representations\n- Similarity search\n## Key Concepts\n### Prompts & Completions\n- Prompt = input\n- Completion = output\n- Token = unit of text\n### Temperature\n- 0 = deterministic\n- 1 = creative/random\n- Code: low, Creative: high\n### Prompt Engineering\n- System message (set persona)\n- Zero-shot (no examples)\n- Few-shot (2-5 examples)\n- Chain of thought\n### Grounding & RAG\n- RAG reduces hallucinations\n- Retrieve docs then add to prompt\n- Primary anti-hallucination technique\n### Fine-Tuning\n- Additional training on your data\n- Deep domain customization\n- vs System message (quick rules)\n## Azure Services\n### Azure OpenAI Service\n- Enterprise security\n- Data NOT used for training\n- Private endpoints / VNets\n- Content filters (4 categories)\n- Violence, Hate, Sexual, Self-harm\n- Severity levels: Safe, Low, Medium, High\n- Data retained 30 days for abuse monitoring\n### Azure AI Foundry\n- Unified AI development portal\n- Model Catalog (multi-provider)\n- Playground (test prompts)\n- Prompt Flow (LLM pipelines)\n- Evaluation & deployment`}
+{id:1,title:"AI Workloads & Responsible AI",color:"var(--d1)",md:`# AI Workloads & Considerations
+## AI Workload Types
+### Computer Vision
+- Image classification
+- Object detection
+- OCR
+- Facial detection
+### NLP
+- Sentiment analysis
+- Key phrase extraction
+- Entity recognition
+- Speech recognition/synthesis
+- Translation
+### Document Processing
+- Invoice/receipt extraction
+- ID document processing
+- Custom form extraction
+### Generative AI
+- Text generation (GPT)
+- Image generation (DALL-E)
+- Code generation
+- Conversational AI
+### Knowledge Mining
+- Azure AI Search
+- Index & search documents
+## Responsible AI Principles
+### Fairness
+- No biased outcomes
+- Equal treatment across groups
+### Reliability & Safety
+- Works under expected conditions
+- Handles edge cases
+### Privacy & Security
+- Data protection
+- Access controls
+### Inclusiveness
+- Accessible to all
+- Regardless of disability
+### Transparency
+- Users understand decisions
+- Disclose AI interactions
+### Accountability
+- HUMANS oversee AI
+- Governance frameworks`},
+{id:2,title:"Machine Learning on Azure",color:"var(--d2)",md:`# Machine Learning on Azure
+## ML Techniques
+### Regression (Supervised)
+- Predicts numbers
+- Price, temperature, count
+### Classification (Supervised)
+- Predicts categories
+- Binary: yes/no, spam/not
+- Multi-class: type A/B/C
+### Clustering (Unsupervised)
+- Groups similar data
+- No predefined labels
+- Customer segmentation
+## Core Concepts
+### Features & Labels
+- Feature = input variable
+- Label = what you predict
+- Clustering has NO label
+### Dataset Splits
+- Training set (learn patterns)
+- Validation set (tune/prevent overfit)
+- Test set (final evaluation)
+### Deep Learning
+- Neural networks, multiple layers
+- More data, more compute
+- Best for images, text, audio
+### Transformer Architecture
+- Self-attention mechanism
+- Parallel processing
+- Foundation of GPT, BERT
+## Azure ML Capabilities
+### AutoML
+- No code required
+- Tries multiple algorithms
+- Classification, Regression, Forecasting
+### Designer
+- Drag-and-drop visual ML
+### Notebooks
+- Custom Python/R code
+### Deployment
+- Managed online endpoints
+- Batch endpoints
+- Model registry`},
+{id:3,title:"Computer Vision on Azure",color:"var(--d3)",md:`# Computer Vision on Azure
+## Task Types
+### Image Classification
+- One label for whole image
+- "This is a cat"
+### Object Detection
+- Objects + bounding boxes
+- "Car at (x,y,w,h)"
+- Can count objects
+### OCR
+- Extract text from images
+- Printed & handwritten
+- Read API
+### Facial Detection
+- Face locations
+- Attributes: glasses, head pose
+- Verification (1:1)
+- Identification (1:many)
+## Azure Services
+### Azure AI Vision
+- Image analysis & captions
+- OCR (Read API)
+- Object detection
+- Spatial analysis (video)
+- Smart cropping
+### Azure AI Face
+- Face detection
+- Face attributes
+- Face verification (1:1)
+- Face identification (1:many, approval required)
+- Emotion detection RETIRED
+### Azure AI Document Intelligence
+- Structured extraction
+- Pre-built: invoices, receipts, IDs
+- Custom models
+- Key-value pairs & tables`},
+{id:4,title:"NLP on Azure",color:"var(--d4)",md:`# NLP on Azure
+## NLP Capabilities
+### Key Phrase Extraction
+- Main topics (flat list)
+### Entity Recognition (NER)
+- Entities WITH categories
+- Person, Org, Location, Date
+### Sentiment Analysis
+- Positive / Negative / Neutral
+- Opinion mining (aspect-based)
+### Speech Recognition (STT)
+- Audio → Text
+### Speech Synthesis (TTS)
+- Text → Audio
+### Translation
+- Text: Azure AI Translator
+- Speech: Azure AI Speech
+## Azure Services
+### Azure AI Language
+#### Pre-built (no training)
+- Sentiment analysis
+- Key phrase extraction
+- NER & entity linking
+- Language detection
+- Text summarization
+#### Custom (your data)
+- Question Answering
+- CLU (intents + entities)
+- Custom classification
+- Custom NER
+### Azure AI Speech
+- Speech-to-Text
+- Text-to-Speech
+- Speech Translation
+- Speaker Recognition
+- Keyword Recognition
+- Intent Recognition
+### Azure AI Translator
+- Text translation
+- Document translation`},
+{id:5,title:"Generative AI on Azure",color:"var(--d5)",md:`# Generative AI on Azure
+## Models
+### GPT
+- Text, code, reasoning
+- GPT-3.5, GPT-4, GPT-4o
+### DALL-E
+- Images from text
+### Whisper
+- Speech-to-text
+### Embeddings
+- Vector representations
+- Similarity search
+## Key Concepts
+### Prompts & Completions
+- Prompt = input
+- Completion = output
+- Token = unit of text
+### Temperature
+- 0 = deterministic
+- 1 = creative/random
+- Code → low, Creative → high
+### Prompt Engineering
+- System message (set persona)
+- Zero-shot (no examples)
+- Few-shot (2-5 examples)
+- Chain of thought
+### Grounding & RAG
+- RAG reduces hallucinations
+- Retrieve docs → add to prompt
+- Primary anti-hallucination technique
+### Fine-Tuning
+- Additional training on your data
+- Deep domain customization
+- vs System message (quick rules)
+## Azure Services
+### Azure OpenAI Service
+- Enterprise security
+- Data NOT used for training
+- Private endpoints / VNets
+- Content filters (4 categories)
+- Violence, Hate, Sexual, Self-harm
+- Severity levels: Safe, Low, Medium, High
+- Data retained 30 days for abuse monitoring
+### Azure AI Foundry
+- Unified AI development portal
+- Model Catalog (multi-provider)
+- Playground (test prompts)
+- Prompt Flow (LLM pipelines)
+- Evaluation & deployment`}
 ];
 
 // ========== STORAGE ==========
 const PREFIX='ai900_';
 const store={
 get(k,d){try{const v=localStorage.getItem(PREFIX+k);return v?JSON.parse(v):d}catch{return d}},
-set(k,v){try{localStorage.setItem(PREFIX+k,JSON.stringify(v))}catch{}}
+set(k,v){try{localStorage.setItem(PREFIX+k,JSON.stringify(v))}catch{}},
 };
 
 // ========== THEME ==========
-(function(){const s=store.get('theme','dark');if(s==='light')document.documentElement.setAttribute('data-theme','light');updateThemeIcon()})();
-function updateThemeIcon(){document.getElementById('theme-toggle').textContent=document.documentElement.getAttribute('data-theme')==='light'?'☀️':'🌙'}
+(function initTheme(){
+const saved=store.get('theme','dark');
+if(saved==='light')document.documentElement.setAttribute('data-theme','light');
+updateThemeIcon();
+})();
+function updateThemeIcon(){
+const isLight=document.documentElement.getAttribute('data-theme')==='light';
+document.getElementById('theme-toggle').textContent=isLight?'☀️':'🌙';
+}
 document.getElementById('theme-toggle').addEventListener('click',()=>{
-const l=document.documentElement.getAttribute('data-theme')==='light';
-if(l)document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme','light');
-store.set('theme',l?'dark':'light');updateThemeIcon();
-document.querySelectorAll('.mm-body svg text').forEach(t=>{t.style.fill=getComputedStyle(document.documentElement).getPropertyValue('--text').trim()});
+const isLight=document.documentElement.getAttribute('data-theme')==='light';
+if(isLight){document.documentElement.removeAttribute('data-theme');store.set('theme','dark')}
+else{document.documentElement.setAttribute('data-theme','light');store.set('theme','light')}
+updateThemeIcon();
+// Update inline fill on any rendered mind map SVG text (CSS !important handles most, this catches inline styles)
+const textColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+document.querySelectorAll('.mm-body svg text').forEach(t=>{t.style.fill=textColor});
 });
-
-// ========== XP ==========
-let xp=store.get('xp',0);
-function addXP(n){xp+=n;store.set('xp',xp);document.getElementById('xp-badge').textContent=xp+' XP'}
-document.getElementById('xp-badge').textContent=xp+' XP';
-
-// ========== ACTIVITY ==========
-let activity=store.get('activity',{});
-function trackActivity(){const d=new Date().toISOString().slice(0,10);activity[d]=(activity[d]||0)+1;store.set('activity',activity)}
-
-// ========== ZEN MODE ==========
-document.getElementById('zen-toggle').addEventListener('click',()=>{document.body.classList.toggle('zen')});
 
 // ========== STATE ==========
 let starred=store.get('starred',{});
@@ -511,136 +660,259 @@ let quizHistory=store.get('quizHistory',[]);
 let streak=store.get('streak',{days:0,last:null});
 let fcDomain='all',fcMode='all',fcIdx=0,fcDeck=[];
 let qzDomain='all',qzLen=10,qzActive=false,qzIdx=0,qzScore=0,qzAnswered=[],qzQuestions=[];
-let csDomain='all';
+
 function save(){store.set('starred',starred);store.set('mastered',mastered);store.set('reviews',reviews);store.set('quizHistory',quizHistory);store.set('streak',streak)}
 function updateStreak(){const today=new Date().toDateString();if(streak.last!==today){if(streak.last){const d=new Date(streak.last);d.setDate(d.getDate()+1);streak.days=d.toDateString()===today?streak.days+1:1}else{streak.days=1}streak.last=today;save()}}
 
 // ========== NAV ==========
-const tabNames={dashboard:'Dashboard',flashcards:'Flashcards',quiz:'Quiz',mindmaps:'Mind Maps',cheatsheets:'Cheat Sheets',progress:'Progress'};
-function switchTab(id){
-document.querySelectorAll('.sb-btn').forEach(x=>x.classList.remove('active'));
-const btn=document.querySelector(`.sb-btn[data-tab="${id}"]`);if(btn)btn.classList.add('active');
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>{
+document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+b.classList.add('active');
 document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-document.getElementById('tb-title').textContent=tabNames[id]||id;
-if(id==='dashboard')renderDashboard();
-if(id==='progress')renderProgress();
-if(id==='mindmaps')initMindmaps();
-}
-document.querySelectorAll('.sb-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
-
-// ========== DASHBOARD ==========
-function renderDashboard(){
-const totalCards=FLASHCARDS.length,mc=Object.keys(mastered).length,sc=Object.keys(starred).length;
-const pct=Math.round(mc/totalCards*100),ls=quizHistory.length?quizHistory[quizHistory.length-1].score+'%':'—';
-document.getElementById('dashboard').innerHTML=`
-<div class="dash-section"><h2>Study Flow</h2><p class="dash-sub">Follow this path for optimal retention</p>
-<div class="flow-cards">
-<div class="flow-card" data-tab="mindmaps"><span class="flow-icon">🧠</span><strong>Explore</strong><span>Mind Maps</span></div><div class="flow-arrow">→</div>
-<div class="flow-card" data-tab="cheatsheets"><span class="flow-icon">📖</span><strong>Review</strong><span>Cheat Sheets</span></div><div class="flow-arrow">→</div>
-<div class="flow-card" data-tab="flashcards"><span class="flow-icon">🗂️</span><strong>Practice</strong><span>Flashcards</span></div><div class="flow-arrow">→</div>
-<div class="flow-card" data-tab="quiz"><span class="flow-icon">❓</span><strong>Validate</strong><span>Quiz</span></div>
-</div></div>
-<div class="dash-stats">
-<div class="dash-stat"><div class="stat-ring"><svg viewBox="0 0 36 36"><path d="M18 2.0845a15.9155 15.9155 0 010 31.831 15.9155 15.9155 0 010-31.831" fill="none" stroke="var(--surface2)" stroke-width="3"/><path d="M18 2.0845a15.9155 15.9155 0 010 31.831 15.9155 15.9155 0 010-31.831" fill="none" stroke="var(--green)" stroke-width="3" stroke-dasharray="${pct},100" stroke-linecap="round"/></svg><span>${pct}%</span></div><div class="stat-label">Mastery</div></div>
-<div class="dash-stat"><div class="stat-num">${mc}/${totalCards}</div><div class="stat-label">Cards Mastered</div></div>
-<div class="dash-stat"><div class="stat-num">${sc}</div><div class="stat-label">Need Review</div></div>
-<div class="dash-stat"><div class="stat-num">${streak.days} 🔥</div><div class="stat-label">Day Streak</div></div>
-<div class="dash-stat"><div class="stat-num">${xp}</div><div class="stat-label">XP Earned</div></div>
-<div class="dash-stat"><div class="stat-num">${ls}</div><div class="stat-label">Last Quiz</div></div>
-</div>
-<div class="dash-section"><h3>30-Day Activity</h3><div class="heat-map" id="heat-map"></div></div>
-<div class="dash-section"><h3>Domain Mastery</h3>${DOMAINS.map(d=>{
-const dc=FLASHCARDS.filter(c=>c.d===d.id),dm=dc.filter(c=>mastered[c.id]).length,p=dc.length?Math.round(dm/dc.length*100):0;
-return`<div class="prog-bar-wrap"><div class="prog-bar-label"><span>D${d.id}: ${d.name}</span><span>${dm}/${dc.length} (${p}%)</span></div><div class="prog-bar"><div class="prog-bar-fill" style="width:${p}%;background:${d.color}"></div></div></div>`}).join('')}</div>`;
-renderHeatMap();
-document.querySelectorAll('.flow-card[data-tab]').forEach(c=>c.addEventListener('click',()=>switchTab(c.dataset.tab)));
-}
-function renderHeatMap(){
-const el=document.getElementById('heat-map');if(!el)return;
-const today=new Date();let html='';
-for(let i=34;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);const k=d.toISOString().slice(0,10);const v=activity[k]||0;
-const cls=v===0?'':v<=5?'h1':v<=15?'h2':'h3';
-html+=`<div class="heat-day ${cls}" title="${k}: ${v} reviews"></div>`}
-el.innerHTML=html;
-}
+document.getElementById(b.dataset.tab).classList.add('active');
+if(b.dataset.tab==='progress')renderProgress();
+if(b.dataset.tab==='mindmaps')initMindmaps();
+}));
 
 // ========== FILTERS ==========
-function buildFilters(cid,onChange){
-const c=document.getElementById(cid);
+function buildFilters(containerId,onChange){
+const c=document.getElementById(containerId);
 c.innerHTML='<button class="filter-btn active" data-d="all">All</button>'+DOMAINS.map(d=>`<button class="filter-btn" data-d="${d.id}">D${d.id}: ${d.name}</button>`).join('');
 c.querySelectorAll('.filter-btn').forEach(b=>b.addEventListener('click',()=>{
-c.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');onChange(b.dataset.d==='all'?'all':+b.dataset.d)}));
+c.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
+b.classList.add('active');
+onChange(b.dataset.d==='all'?'all':+b.dataset.d);
+}));
 }
 
 // ========== FLASHCARDS ==========
-function buildFcDeck(){let c=FLASHCARDS;if(fcDomain!=='all')c=c.filter(x=>x.d===fcDomain);if(fcMode==='starred')c=c.filter(x=>starred[x.id]);if(fcMode==='unmastered')c=c.filter(x=>!mastered[x.id]);fcDeck=c;fcIdx=0}
+function buildFcDeck(){
+let cards=FLASHCARDS;
+if(fcDomain!=='all')cards=cards.filter(c=>c.d===fcDomain);
+if(fcMode==='starred')cards=cards.filter(c=>starred[c.id]);
+if(fcMode==='unmastered')cards=cards.filter(c=>!mastered[c.id]);
+fcDeck=cards;fcIdx=0;
+}
 function renderCard(){
-const f=document.getElementById('card-flip');f.classList.remove('flipped');
-if(!fcDeck.length){document.getElementById('card-q').textContent=fcMode==='starred'?'No starred cards. Keep studying!':'No cards match filters.';document.getElementById('card-a').textContent='';document.getElementById('card-domain').textContent='';document.getElementById('card-num').textContent='';document.getElementById('fc-count').textContent='0 / 0';document.getElementById('fc-bar').style.width='0%';return}
-if(fcIdx>=fcDeck.length)fcIdx=0;const c=fcDeck[fcIdx],d=DOMAINS.find(x=>x.id===c.d);
-document.getElementById('card-domain').textContent=d.name;document.getElementById('card-domain').style.background=d.color;
-document.getElementById('card-q').textContent=c.q;document.getElementById('card-a').textContent=c.a;
+const flip=document.getElementById('card-flip');
+flip.classList.remove('flipped');
+if(!fcDeck.length){
+document.getElementById('card-q').textContent=fcMode==='starred'?'No starred cards. Keep studying!':'No cards match your filters.';
+document.getElementById('card-a').textContent='';
+document.getElementById('card-domain').textContent='';
+document.getElementById('card-num').textContent='';
+document.getElementById('fc-count').textContent='0 / 0';
+document.getElementById('fc-bar').style.width='0%';
+return;
+}
+if(fcIdx>=fcDeck.length)fcIdx=0;
+const c=fcDeck[fcIdx];
+const dom=DOMAINS.find(d=>d.id===c.d);
+document.getElementById('card-domain').textContent=dom.name;
+document.getElementById('card-domain').style.background=dom.color;
+document.getElementById('card-q').textContent=c.q;
+document.getElementById('card-a').textContent=c.a;
 document.getElementById('card-num').textContent=`Card ${fcIdx+1} of ${fcDeck.length}`;
 document.getElementById('fc-count').textContent=`${fcIdx+1} / ${fcDeck.length}`;
 document.getElementById('fc-bar').style.width=((fcIdx+1)/fcDeck.length*100)+'%';
 document.getElementById('btn-star').textContent=starred[c.id]?'★ Starred':'⭐ Star';
 }
 document.getElementById('card-flip').addEventListener('click',()=>document.getElementById('card-flip').classList.toggle('flipped'));
-document.getElementById('btn-again').addEventListener('click',()=>{if(!fcDeck.length)return;const c=fcDeck[fcIdx];starred[c.id]=true;delete mastered[c.id];reviews++;addXP(5);trackActivity();updateStreak();save();fcIdx++;renderCard()});
-document.getElementById('btn-got').addEventListener('click',()=>{if(!fcDeck.length)return;const c=fcDeck[fcIdx];mastered[c.id]=true;reviews++;addXP(5);trackActivity();updateStreak();save();fcIdx++;renderCard()});
+document.getElementById('btn-again').addEventListener('click',()=>{if(!fcDeck.length)return;const c=fcDeck[fcIdx];starred[c.id]=true;delete mastered[c.id];reviews++;updateStreak();save();fcIdx++;renderCard()});
+document.getElementById('btn-got').addEventListener('click',()=>{if(!fcDeck.length)return;const c=fcDeck[fcIdx];mastered[c.id]=true;reviews++;updateStreak();save();fcIdx++;renderCard()});
 document.getElementById('btn-star').addEventListener('click',()=>{if(!fcDeck.length)return;const c=fcDeck[fcIdx];starred[c.id]=!starred[c.id];save();document.getElementById('btn-star').textContent=starred[c.id]?'★ Starred':'⭐ Star'});
 buildFilters('fc-filters',d=>{fcDomain=d;buildFcDeck();renderCard()});
-document.querySelectorAll('.fc-mode-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.fc-mode-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');fcMode=b.dataset.mode;buildFcDeck();renderCard()}));
+document.querySelectorAll('.fc-mode-btn').forEach(b=>b.addEventListener('click',()=>{
+document.querySelectorAll('.fc-mode-btn').forEach(x=>x.classList.remove('active'));
+b.classList.add('active');fcMode=b.dataset.mode;buildFcDeck();renderCard();
+}));
 buildFcDeck();renderCard();
 
 // ========== QUIZ ==========
-function showQuizSetup(){qzActive=false;const a=document.getElementById('quiz-area');
-a.innerHTML=`<div class="quiz-setup"><h2>Practice Quiz</h2><p>Test your knowledge across all AI-900 domains</p><div class="quiz-opt" id="qz-len"><button data-n="10" class="active">10 Questions</button><button data-n="25">25 Questions</button></div><button class="quiz-start" id="qz-start">Start Quiz</button></div>`;
-a.querySelectorAll('#qz-len button').forEach(b=>b.addEventListener('click',()=>{a.querySelectorAll('#qz-len button').forEach(x=>x.classList.remove('active'));b.classList.add('active');qzLen=+b.dataset.n}));
-a.querySelector('#qz-start').addEventListener('click',startQuiz)}
-function startQuiz(){let p=QUIZ_QUESTIONS.slice();if(qzDomain!=='all')p=p.filter(q=>q.d===qzDomain);for(let i=p.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[p[i],p[j]]=[p[j],p[i]]}qzQuestions=p.slice(0,Math.min(qzLen,p.length));qzIdx=0;qzScore=0;qzAnswered=new Array(qzQuestions.length).fill(-1);qzActive=true;renderQuizQ()}
-function renderQuizQ(){if(qzIdx>=qzQuestions.length){showQuizScore();return}const q=qzQuestions[qzIdx],d=DOMAINS.find(x=>x.id===q.d),a=document.getElementById('quiz-area'),pct=qzIdx/qzQuestions.length*100;
-a.innerHTML=`<div class="quiz-pbar"><div class="quiz-pbar-fill" style="width:${pct}%"></div></div><div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:.85rem;color:var(--text2)"><span style="padding:3px 10px;border-radius:12px;background:${d.color};color:#fff;font-size:.75rem">${d.name}</span><span>Question ${qzIdx+1} of ${qzQuestions.length}</span></div><div class="quiz-q"><h3>${q.q}</h3><div class="opts">${q.opts.map((o,i)=>`<label data-i="${i}"><input type="radio" name="qopt" style="display:none" value="${i}"> ${String.fromCharCode(65+i)}) ${o}</label>`).join('')}</div><div class="explanation" id="qz-exp" style="display:none"></div></div><div class="quiz-nav"><button id="qz-next" style="display:none">Next →</button></div>`;
-if(qzAnswered[qzIdx]>=0){showAnswer(q,qzAnswered[qzIdx]);return}
-a.querySelectorAll('.opts label').forEach(l=>l.addEventListener('click',()=>{if(qzAnswered[qzIdx]>=0)return;const i=+l.dataset.i;qzAnswered[qzIdx]=i;if(i===q.ans)qzScore++;addXP(10);trackActivity();showAnswer(q,i);updateStreak();save()}))}
-function showAnswer(q,ch){const a=document.getElementById('quiz-area');a.querySelectorAll('.opts label').forEach(l=>{const i=+l.dataset.i;if(i===q.ans)l.classList.add('correct');else if(i===ch)l.classList.add('wrong');l.classList.add('selected')});const e=a.querySelector('#qz-exp');e.style.display='block';e.innerHTML=`<strong>${ch===q.ans?'✓ Correct!':'✗ Incorrect.'}</strong> ${q.exp}`;const n=a.querySelector('#qz-next');n.style.display='inline-block';n.addEventListener('click',()=>{qzIdx++;renderQuizQ()})}
-function showQuizScore(){const p=Math.round(qzScore/qzQuestions.length*100),pass=p>=70;quizHistory.push({score:p,date:new Date().toISOString(),total:qzQuestions.length,correct:qzScore});save();const a=document.getElementById('quiz-area');a.innerHTML=`<div class="quiz-score"><h2 class="${pass?'pass':'fail'}">${p}%</h2><p>${qzScore} / ${qzQuestions.length} correct — ${pass?'PASS ✓':'FAIL ✗'} (70% needed)</p><div class="quiz-nav"><button id="qz-review">Review Answers</button><button id="qz-retry">New Quiz</button></div></div>`;a.querySelector('#qz-retry').addEventListener('click',showQuizSetup);a.querySelector('#qz-review').addEventListener('click',()=>{qzIdx=0;renderQuizQ()})}
-buildFilters('qz-filters',d=>{qzDomain=d;showQuizSetup()});showQuizSetup();
+function showQuizSetup(){
+qzActive=false;
+const area=document.getElementById('quiz-area');
+area.innerHTML=`<div class="quiz-setup"><h2>Practice Quiz</h2><p>Test your knowledge across all AI-900 domains</p>
+<div class="quiz-opt" id="qz-len"><button data-n="10" class="active">10 Questions</button><button data-n="25">25 Questions</button></div>
+<button class="quiz-start" id="qz-start">Start Quiz</button></div>`;
+area.querySelectorAll('#qz-len button').forEach(b=>b.addEventListener('click',()=>{
+area.querySelectorAll('#qz-len button').forEach(x=>x.classList.remove('active'));
+b.classList.add('active');qzLen=+b.dataset.n;
+}));
+area.querySelector('#qz-start').addEventListener('click',startQuiz);
+}
+function startQuiz(){
+let pool=QUIZ_QUESTIONS.slice();
+if(qzDomain!=='all')pool=pool.filter(q=>q.d===qzDomain);
+for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+qzQuestions=pool.slice(0,Math.min(qzLen,pool.length));
+qzIdx=0;qzScore=0;qzAnswered=new Array(qzQuestions.length).fill(-1);qzActive=true;
+renderQuizQuestion();
+}
+function renderQuizQuestion(){
+if(qzIdx>=qzQuestions.length){showQuizScore();return}
+const q=qzQuestions[qzIdx];
+const dom=DOMAINS.find(d=>d.id===q.d);
+const area=document.getElementById('quiz-area');
+const pct=((qzIdx)/qzQuestions.length*100);
+area.innerHTML=`<div class="quiz-pbar"><div class="quiz-pbar-fill" style="width:${pct}%"></div></div>
+<div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:.85rem;color:var(--text2)">
+<span style="padding:3px 10px;border-radius:12px;background:${dom.color};color:#fff;font-size:.75rem">${dom.name}</span>
+<span>Question ${qzIdx+1} of ${qzQuestions.length}</span></div>
+<div class="quiz-q"><h3>${q.q}</h3><div class="opts">${q.opts.map((o,i)=>`<label data-i="${i}"><input type="radio" name="qopt" style="display:none" value="${i}"> ${String.fromCharCode(65+i)}) ${o}</label>`).join('')}</div>
+<div class="explanation" id="qz-exp" style="display:none"></div></div>
+<div class="quiz-nav"><button id="qz-next" style="display:none">Next →</button></div>`;
+const answered=qzAnswered[qzIdx];
+if(answered>=0){showAnswer(q,answered);return}
+area.querySelectorAll('.opts label').forEach(l=>l.addEventListener('click',()=>{
+if(qzAnswered[qzIdx]>=0)return;
+const i=+l.dataset.i;qzAnswered[qzIdx]=i;
+if(i===q.ans)qzScore++;
+showAnswer(q,i);
+updateStreak();save();
+}));
+}
+function showAnswer(q,chosen){
+const area=document.getElementById('quiz-area');
+area.querySelectorAll('.opts label').forEach(l=>{
+const i=+l.dataset.i;
+if(i===q.ans)l.classList.add('correct');
+else if(i===chosen)l.classList.add('wrong');
+l.classList.add('selected');
+});
+const exp=area.querySelector('#qz-exp');
+exp.style.display='block';
+exp.innerHTML=`<strong>${chosen===q.ans?'✓ Correct!':'✗ Incorrect.'}</strong> ${q.exp}`;
+const next=area.querySelector('#qz-next');
+next.style.display='inline-block';
+next.addEventListener('click',()=>{qzIdx++;renderQuizQuestion()});
+}
+function showQuizScore(){
+const pct=Math.round(qzScore/qzQuestions.length*100);
+const pass=pct>=70;
+quizHistory.push({score:pct,date:new Date().toISOString(),total:qzQuestions.length,correct:qzScore});
+save();
+const area=document.getElementById('quiz-area');
+area.innerHTML=`<div class="quiz-score"><h2 class="${pass?'pass':'fail'}">${pct}%</h2>
+<p>${qzScore} / ${qzQuestions.length} correct — ${pass?'PASS ✓':'FAIL ✗'} (70% needed)</p>
+<div class="quiz-nav"><button id="qz-review">Review Answers</button><button id="qz-retry">New Quiz</button></div></div>`;
+area.querySelector('#qz-retry').addEventListener('click',showQuizSetup);
+area.querySelector('#qz-review').addEventListener('click',()=>{qzIdx=0;renderQuizQuestion()});
+}
+buildFilters('qz-filters',d=>{qzDomain=d;showQuizSetup()});
+showQuizSetup();
 
 // ========== MIND MAPS ==========
-let mmInited=false;const mmRendered={};
-function loadScript(u){return new Promise((r,j)=>{const s=document.createElement('script');s.src=u;s.onload=r;s.onerror=j;document.head.appendChild(s)})}
-let mmDeps=null;
-function loadMM(){if(!mmDeps)mmDeps=loadScript('https://cdn.jsdelivr.net/npm/d3@7').then(()=>loadScript('https://cdn.jsdelivr.net/npm/markmap-view')).then(()=>loadScript('https://cdn.jsdelivr.net/npm/markmap-lib@0.18.12/dist/browser/index.iife.js'));return mmDeps}
-function renderOneMM(id){if(mmRendered[id])return;const m=MINDMAPS.find(x=>x.id===id);if(!m)return;const b=document.getElementById('mm-body-'+id);if(!b)return;b.innerHTML='<p style="padding:20px;color:var(--text2)">Loading mind map…</p>';
-loadMM().then(()=>{const{Transformer,Markmap}=window.markmap;const{root}=new Transformer().transform(m.md);b.innerHTML='';const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.style.width='100%';svg.style.height='600px';b.appendChild(svg);const mm=Markmap.create(svg,{initialExpandLevel:-1},root);setTimeout(()=>mm.fit(),100);mmRendered[id]=true}).catch(e=>{b.innerHTML='<p style="padding:20px;color:var(--red)">Failed to load mind map.<br><small>'+e+'</small></p>'})}
-function initMindmaps(){if(mmInited)return;mmInited=true;const a=document.getElementById('mm-area');a.innerHTML='';
-MINDMAPS.forEach(m=>{const s=document.createElement('div');s.className='mm-section';const h=document.createElement('div');h.className='mm-header';h.dataset.id=m.id;h.innerHTML=`<span class="arrow">▶</span><h3 style="color:${m.color}">${m.title}</h3><span style="font-size:.8rem;color:var(--text2)">D${m.id}</span>`;const b=document.createElement('div');b.className='mm-body';b.id='mm-body-'+m.id;s.appendChild(h);s.appendChild(b);a.appendChild(s)});
-a.querySelectorAll('.mm-header').forEach(h=>h.addEventListener('click',()=>{h.classList.toggle('open');const b=document.getElementById('mm-body-'+h.dataset.id);b.classList.toggle('open');if(b.classList.contains('open'))renderOneMM(+h.dataset.id)}))}
+let mmInited=false;
+const mmRendered={};
+
+function loadScript(url){
+return new Promise((res,rej)=>{const s=document.createElement('script');s.src=url;s.onload=res;s.onerror=rej;document.head.appendChild(s)});
+}
+
+let mmDepsLoaded=false,mmDepsPromise=null;
+function loadMarkmapDeps(){
+if(mmDepsLoaded)return Promise.resolve();
+if(mmDepsPromise)return mmDepsPromise;
+mmDepsPromise=loadScript('https://cdn.jsdelivr.net/npm/d3@7')
+.then(()=>loadScript('https://cdn.jsdelivr.net/npm/markmap-view'))
+.then(()=>loadScript('https://cdn.jsdelivr.net/npm/markmap-lib@0.18.12/dist/browser/index.iife.js'))
+.then(()=>{mmDepsLoaded=true});
+return mmDepsPromise;
+}
+
+function renderOneMindmap(id){
+if(mmRendered[id])return;
+const m=MINDMAPS.find(x=>x.id===id);if(!m)return;
+const body=document.getElementById('mm-body-'+id);if(!body)return;
+body.innerHTML='<p style="padding:20px;color:var(--text2)">Loading mind map…</p>';
+loadMarkmapDeps().then(()=>{
+const {Transformer}=window.markmap;
+const transformer=new Transformer();
+const {root}=transformer.transform(m.md);
+body.innerHTML='';
+const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+svg.style.width='100%';svg.style.height='600px';
+body.appendChild(svg);
+const mm=window.markmap.Markmap.create(svg,{initialExpandLevel:-1},root);
+setTimeout(()=>mm.fit(),100);
+mmRendered[id]=true;
+}).catch(e=>{
+body.innerHTML='<p style="padding:20px;color:var(--red)">Failed to load mind map. Check your internet connection.<br><small>'+e+'</small></p>';
+});
+}
+
+function initMindmaps(){
+if(mmInited)return;mmInited=true;
+const area=document.getElementById('mm-area');
+area.innerHTML='';
+MINDMAPS.forEach(m=>{
+const section=document.createElement('div');section.className='mm-section';
+const header=document.createElement('div');header.className='mm-header';header.dataset.id=m.id;
+header.innerHTML=`<span class="arrow">▶</span><h3 style="color:${m.color}">${m.title}</h3><span style="font-size:.8rem;color:var(--text2)">D${m.id}</span>`;
+const body=document.createElement('div');body.className='mm-body';body.id='mm-body-'+m.id;
+section.appendChild(header);section.appendChild(body);area.appendChild(section);
+});
+area.querySelectorAll('.mm-header').forEach(h=>h.addEventListener('click',()=>{
+h.classList.toggle('open');
+const body=document.getElementById('mm-body-'+h.dataset.id);
+body.classList.toggle('open');
+if(body.classList.contains('open'))renderOneMindmap(+h.dataset.id);
+}));
+}
 
 // ========== PROGRESS ==========
-function renderProgress(){const tc=FLASHCARDS.length,mc=Object.keys(mastered).length,sc=Object.keys(starred).length,ls=quizHistory.length?quizHistory[quizHistory.length-1].score+'%':'—';
-document.getElementById('prog-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${mc}</div><div class="stat-label">Cards Mastered</div></div><div class="stat-card"><div class="stat-num">${sc}</div><div class="stat-label">Cards Starred</div></div><div class="stat-card"><div class="stat-num">${reviews}</div><div class="stat-label">Total Reviews</div></div><div class="stat-card"><div class="stat-num">${ls}</div><div class="stat-label">Last Quiz</div></div><div class="stat-card"><div class="stat-num">${streak.days}</div><div class="stat-label">Day Streak 🔥</div></div><div class="stat-card"><div class="stat-num">${quizHistory.length}</div><div class="stat-label">Quizzes Taken</div></div>`;
-document.getElementById('prog-bars').innerHTML='<div class="prog-card"><h3>Mastery by Domain</h3>'+DOMAINS.map(d=>{const dc=FLASHCARDS.filter(c=>c.d===d.id),dm=dc.filter(c=>mastered[c.id]).length,p=dc.length?Math.round(dm/dc.length*100):0;return`<div class="prog-bar-wrap"><div class="prog-bar-label"><span>D${d.id}: ${d.name}</span><span>${dm}/${dc.length} (${p}%)</span></div><div class="prog-bar"><div class="prog-bar-fill" style="width:${p}%;background:${d.color}"></div></div></div>`}).join('')+'</div>'}
-document.getElementById('btn-reset').addEventListener('click',()=>{if(!confirm('Reset ALL progress? This cannot be undone.'))return;starred={};mastered={};reviews=0;quizHistory=[];streak={days:0,last:null};xp=0;activity={};store.set('xp',0);store.set('activity',{});save();renderProgress();buildFcDeck();renderCard();document.getElementById('xp-badge').textContent='0 XP'});
+function renderProgress(){
+const totalCards=FLASHCARDS.length;
+const masteredCount=Object.keys(mastered).length;
+const starredCount=Object.keys(starred).length;
+const lastScore=quizHistory.length?quizHistory[quizHistory.length-1].score+'%':'—';
+document.getElementById('prog-stats').innerHTML=`
+<div class="stat-card"><div class="stat-num">${masteredCount}</div><div class="stat-label">Cards Mastered</div></div>
+<div class="stat-card"><div class="stat-num">${starredCount}</div><div class="stat-label">Cards Starred</div></div>
+<div class="stat-card"><div class="stat-num">${reviews}</div><div class="stat-label">Total Reviews</div></div>
+<div class="stat-card"><div class="stat-num">${lastScore}</div><div class="stat-label">Last Quiz Score</div></div>
+<div class="stat-card"><div class="stat-num">${streak.days}</div><div class="stat-label">Day Streak 🔥</div></div>
+<div class="stat-card"><div class="stat-num">${quizHistory.length}</div><div class="stat-label">Quizzes Taken</div></div>`;
+const bars=document.getElementById('prog-bars');
+bars.innerHTML='<div class="prog-card"><h3>Mastery by Domain</h3>'+DOMAINS.map(d=>{
+const domCards=FLASHCARDS.filter(c=>c.d===d.id);
+const domMastered=domCards.filter(c=>mastered[c.id]).length;
+const pct=domCards.length?Math.round(domMastered/domCards.length*100):0;
+return`<div class="prog-bar-wrap"><div class="prog-bar-label"><span>D${d.id}: ${d.name}</span><span>${domMastered}/${domCards.length} (${pct}%)</span></div><div class="prog-bar"><div class="prog-bar-fill" style="width:${pct}%;background:${d.color}"></div></div></div>`;
+}).join('')+'</div>';
+}
+document.getElementById('btn-reset').addEventListener('click',()=>{
+if(!confirm('Reset ALL progress? This cannot be undone.'))return;
+starred={};mastered={};reviews=0;quizHistory=[];streak={days:0,last:null};
+save();renderProgress();buildFcDeck();renderCard();
+});
 
 // ========== CHEATSHEETS ==========
-function renderCheatsheets(domain,search){
-let sheets=domain==='all'?CHEATSHEETS:CHEATSHEETS.filter(s=>s.d===domain);
-if(search){const q=search.toLowerCase();sheets=sheets.filter(s=>s.title.toLowerCase().includes(q)||s.content.toLowerCase().includes(q))}
-const a=document.getElementById('cs-area');
-a.innerHTML=sheets.length?sheets.map((s,i)=>{const d=DOMAINS.find(x=>x.id===s.d);return`<div class="cs-section"><div class="cs-header" data-i="${i}"><span class="arrow" style="color:var(--text2)">▶</span><h3><span style="color:${d.color};font-size:.8rem;margin-right:8px">D${s.d}</span>${s.title}</h3></div><div class="cs-body" id="cs-body-${i}">${s.content}</div></div>`}).join(''):'<p style="color:var(--text2);text-align:center;padding:40px">No sections match your search.</p>';
-a.querySelectorAll('.cs-header').forEach(h=>h.addEventListener('click',()=>{const b=document.getElementById('cs-body-'+h.dataset.i);b.classList.toggle('open');h.querySelector('.arrow').textContent=b.classList.contains('open')?'▼':'▶'}))}
-buildFilters('cs-filters',d=>{csDomain=d;renderCheatsheets(d,document.getElementById('cs-search').value)});
-document.getElementById('cs-search').addEventListener('input',e=>renderCheatsheets(csDomain,e.target.value));
-renderCheatsheets('all','');
+function renderCheatsheets(domain){
+const sheets=domain==='all'?CHEATSHEETS:CHEATSHEETS.filter(s=>s.d===domain);
+const area=document.getElementById('cs-area');
+area.innerHTML=sheets.map((s,i)=>{
+const dom=DOMAINS.find(d=>d.id===s.d);
+return`<div class="cs-section"><div class="cs-header" data-i="${i}"><span class="arrow" style="color:var(--text2)">▶</span><h3><span style="color:${dom.color};font-size:.8rem;margin-right:8px">D${s.d}</span>${s.title}</h3></div><div class="cs-body" id="cs-body-${i}">${s.content}</div></div>`;
+}).join('');
+area.querySelectorAll('.cs-header').forEach(h=>h.addEventListener('click',()=>{
+const body=document.getElementById('cs-body-'+h.dataset.i);
+body.classList.toggle('open');
+h.querySelector('.arrow').textContent=body.classList.contains('open')?'▼':'▶';
+}));
+}
+buildFilters('cs-filters',d=>{renderCheatsheets(d)});
+renderCheatsheets('all');
 
-// ========== KEYBOARD ==========
-document.addEventListener('keydown',e=>{if(!document.getElementById('flashcards').classList.contains('active'))return;if(e.key===' '||e.key==='Enter'){e.preventDefault();document.getElementById('card-flip').classList.toggle('flipped')}if(e.key==='ArrowLeft')document.getElementById('btn-again').click();if(e.key==='ArrowRight')document.getElementById('btn-got').click();if(e.key==='s')document.getElementById('btn-star').click()});
-
-// ========== INIT ==========
-renderDashboard();
+// ========== KEYBOARD SHORTCUTS ==========
+document.addEventListener('keydown',e=>{
+if(!document.getElementById('flashcards').classList.contains('active'))return;
+if(e.key===' '||e.key==='Enter'){e.preventDefault();document.getElementById('card-flip').classList.toggle('flipped')}
+if(e.key==='ArrowLeft')document.getElementById('btn-again').click();
+if(e.key==='ArrowRight')document.getElementById('btn-got').click();
+if(e.key==='s')document.getElementById('btn-star').click();
+});
 </script>
 </body>
 </html>
