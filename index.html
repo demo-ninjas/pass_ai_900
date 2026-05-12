@@ -771,6 +771,42 @@ showQuizSetup();
 
 // ========== MIND MAPS ==========
 let mmInited=false;
+const mmRendered={};
+
+function loadScript(url){
+return new Promise((res,rej)=>{const s=document.createElement('script');s.src=url;s.onload=res;s.onerror=rej;document.head.appendChild(s)});
+}
+
+let mmDepsLoaded=false,mmDepsPromise=null;
+function loadMarkmapDeps(){
+if(mmDepsLoaded)return Promise.resolve();
+if(mmDepsPromise)return mmDepsPromise;
+mmDepsPromise=loadScript('https://cdn.jsdelivr.net/npm/d3@7')
+.then(()=>loadScript('https://cdn.jsdelivr.net/npm/markmap-view@0.18/dist/browser/index.js'))
+.then(()=>loadScript('https://cdn.jsdelivr.net/npm/markmap-lib@0.18/dist/browser/index.js'))
+.then(()=>{mmDepsLoaded=true});
+return mmDepsPromise;
+}
+
+function renderOneMindmap(id){
+if(mmRendered[id])return;
+const m=MINDMAPS.find(x=>x.id===id);if(!m)return;
+const body=document.getElementById('mm-body-'+id);if(!body)return;
+body.innerHTML='<p style="padding:20px;color:var(--text2)">Loading mind map…</p>';
+loadMarkmapDeps().then(()=>{
+const transformer=new markmap.Transformer();
+const {root}=transformer.transform(m.md);
+body.innerHTML='';
+const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+svg.style.width='100%';svg.style.minHeight='400px';
+body.appendChild(svg);
+markmap.Markmap.create(svg,{},root);
+mmRendered[id]=true;
+}).catch(()=>{
+body.innerHTML='<p style="padding:20px;color:var(--text2)">Mind map requires an internet connection to load the markmap library.</p>';
+});
+}
+
 function initMindmaps(){
 if(mmInited)return;mmInited=true;
 const area=document.getElementById('mm-area');
@@ -780,26 +816,14 @@ const section=document.createElement('div');section.className='mm-section';
 const header=document.createElement('div');header.className='mm-header';header.dataset.id=m.id;
 header.innerHTML=`<span class="arrow">▶</span><h3 style="color:${m.color}">${m.title}</h3><span style="font-size:.8rem;color:var(--text2)">D${m.id}</span>`;
 const body=document.createElement('div');body.className='mm-body';body.id='mm-body-'+m.id;
-const mmDiv=document.createElement('div');mmDiv.className='markmap';
-const tpl=document.createElement('script');tpl.type='text/template';tpl.textContent=m.md;
-mmDiv.appendChild(tpl);body.appendChild(mmDiv);
 section.appendChild(header);section.appendChild(body);area.appendChild(section);
 });
 area.querySelectorAll('.mm-header').forEach(h=>h.addEventListener('click',()=>{
 h.classList.toggle('open');
 const body=document.getElementById('mm-body-'+h.dataset.id);
 body.classList.toggle('open');
-if(body.classList.contains('open')&&window.markmap&&window.markmap.autoLoader){
-setTimeout(()=>window.markmap.autoLoader.renderAll(),50);
-}
+if(body.classList.contains('open'))renderOneMindmap(+h.dataset.id);
 }));
-// load markmap
-if(!document.querySelector('script[src*="markmap"]')){
-const s=document.createElement('script');
-s.src='https://cdn.jsdelivr.net/npm/markmap-autoloader@latest';
-s.onload=()=>{if(window.markmap&&window.markmap.autoLoader)window.markmap.autoLoader.renderAll()};
-document.head.appendChild(s);
-}
 }
 
 // ========== PROGRESS ==========
