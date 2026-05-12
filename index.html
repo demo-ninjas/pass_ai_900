@@ -774,12 +774,24 @@ let mmInited=false;
 function initMindmaps(){
 if(mmInited)return;mmInited=true;
 const area=document.getElementById('mm-area');
-area.innerHTML=MINDMAPS.map(m=>`<div class="mm-section"><div class="mm-header" data-id="${m.id}"><span class="arrow">▶</span><h3 style="color:${m.color}">${m.title}</h3><span style="font-size:.8rem;color:var(--text2)">D${m.id}</span></div><div class="mm-body" id="mm-body-${m.id}"><div class="markmap"><script type="text/template">${m.md}<\/script></div></div></div>`).join('');
+area.innerHTML='';
+MINDMAPS.forEach(m=>{
+const section=document.createElement('div');section.className='mm-section';
+const header=document.createElement('div');header.className='mm-header';header.dataset.id=m.id;
+header.innerHTML=`<span class="arrow">▶</span><h3 style="color:${m.color}">${m.title}</h3><span style="font-size:.8rem;color:var(--text2)">D${m.id}</span>`;
+const body=document.createElement('div');body.className='mm-body';body.id='mm-body-'+m.id;
+const mmDiv=document.createElement('div');mmDiv.className='markmap';
+const tpl=document.createElement('script');tpl.type='text/template';tpl.textContent=m.md;
+mmDiv.appendChild(tpl);body.appendChild(mmDiv);
+section.appendChild(header);section.appendChild(body);area.appendChild(section);
+});
 area.querySelectorAll('.mm-header').forEach(h=>h.addEventListener('click',()=>{
 h.classList.toggle('open');
 const body=document.getElementById('mm-body-'+h.dataset.id);
 body.classList.toggle('open');
-if(body.classList.contains('open')&&window.markmap&&window.markmap.autoLoader){window.markmap.autoLoader.renderAll()}
+if(body.classList.contains('open')&&window.markmap&&window.markmap.autoLoader){
+setTimeout(()=>window.markmap.autoLoader.renderAll(),50);
+}
 }));
 // load markmap
 if(!document.querySelector('script[src*="markmap"]')){
