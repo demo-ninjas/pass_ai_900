@@ -118,8 +118,23 @@ Build a single-file HTML/JS interactive study app (index.html) with a modern dar
    - Quiz history saved in localStorage
 
 3. Mind Maps tab — one interactive mind map per domain using markmap:
-   - Use markmap-autoloader from CDN (https://cdn.jsdelivr.net/npm/markmap-autoloader@latest)
-   - Set manual rendering mode — render only when user expands a domain
+   - **DO NOT use markmap-autoloader** — it relies on `<script type="text/template">` tags which fail when inserted via innerHTML (browser treats them as inert) and render at 0×0 inside hidden containers
+   - Instead, use the **programmatic API** with three separate CDN scripts loaded on demand:
+     1. `https://cdn.jsdelivr.net/npm/d3@7` (required dependency)
+     2. `https://cdn.jsdelivr.net/npm/markmap-view` (the SVG renderer)
+     3. `https://cdn.jsdelivr.net/npm/markmap-lib@0.18.12/dist/browser/index.iife.js` (markdown→tree transformer, IIFE browser build)
+   - Load these scripts **lazily** (only when user first opens Mind Maps tab) via a promise chain
+   - Render each mind map **only when its section is expanded** (container must be `display:block` with explicit dimensions before calling `Markmap.create`)
+   - Use `new markmap.Transformer().transform(markdown)` to convert the markdown string to `{root}` data
+   - Create an SVG element with **explicit height** (e.g., `height:600px`) — do NOT use `min-height` or `auto` (markmap needs a real size to calculate layout)
+   - Call `markmap.Markmap.create(svg, {initialExpandLevel: -1}, root)` to render with all nodes expanded
+   - Call `mm.fit()` after a short `setTimeout` (50-100ms) to auto-zoom the tree to fit the viewport
+   - **Dark theme fix**: markmap defaults to dark text — override with CSS:
+     ```css
+     .mm-body svg text { fill: var(--text) !important; font-size: 14px !important; }
+     .mm-body svg .markmap-link { stroke-opacity: .6 !important; }
+     ```
+   - Cache rendered maps (track by ID) so re-opening a section doesn't re-render
    - Full topic hierarchy matching the cheat sheets content
    - Include all "when to use" decisions as branches in the tree
 
@@ -160,6 +175,10 @@ Requirements:
 - [ ] Progress persists across page refreshes
 - [ ] Looks good on mobile (test at 375px width)
 - [ ] Mind maps render when expanded (not all on page load)
+- [ ] Mind map text is readable on dark background (not black-on-dark)
+- [ ] Mind map SVG has explicit height (not min-height or auto)
+- [ ] Mind map auto-fits/zooms to show full tree when expanded
+- [ ] Mind maps use programmatic API (d3 + markmap-view + markmap-lib), NOT markmap-autoloader
 
 ---
 
@@ -289,6 +308,75 @@ const FLASHCARDS = [{id, d, q, a}];
 const QUIZ_QUESTIONS = [{d, q, opts, ans, exp}];
 const CHEATSHEETS = [{d, title, content}];  // content is HTML string
 const MINDMAPS = [{id, title, color, md}];  // md is markdown string for markmap
+```
+
+### Markmap Integration — Pitfalls & Solutions
+
+> These lessons were learned the hard way during the AI-900 build. Follow this guide exactly to avoid blank mind maps.
+
+**Pitfall 1: markmap-autoloader doesn't work with dynamic content**
+- `markmap-autoloader` scans for `<script type="text/template">` in the DOM
+- `<script>` tags inserted via `innerHTML` are **inert** — the browser ignores them entirely
+- Even `document.createElement('script')` works for the DOM node, but the autoloader still fails because it renders at 0×0 inside `display:none` containers
+- **Solution**: Don't use `markmap-autoloader`. Use the programmatic API instead.
+
+**Pitfall 2: Correct CDN URLs**
+```html
+<!-- Load in this exact order via sequential script loading -->
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/markmap-view"></script>
+<script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.18.12/dist/browser/index.iife.js"></script>
+```
+- `markmap-view` needs `d3` as a global — load d3 first
+- `markmap-lib` browser build is at `dist/browser/index.iife.js` (NOT `dist/browser/index.js`)
+- Both libraries expose their API on `window.markmap`
+- **Do NOT guess CDN paths** — verify with `https://data.jsdelivr.com/v1/packages/npm/PACKAGE@VERSION`
+
+**Pitfall 3: SVG needs explicit dimensions BEFORE render**
+- markmap measures the SVG to calculate layout
+- If the SVG is inside a hidden (`display:none`) container, it measures as 0×0
+- **Solution**: Only call `Markmap.create()` AFTER the container is `display:block` and SVG has `height:600px`
+
+**Pitfall 4: Dark theme text is invisible**
+- markmap renders text in dark colors by default (designed for white backgrounds)
+- On a dark theme, the text is invisible
+- **Solution**: Override with CSS `fill` on `svg text` elements
+
+**Working implementation pattern**:
+```js
+// Lazy-load scripts on first use
+function loadScript(url) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = url; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+// Load deps once, cache the promise
+let depsPromise = null;
+function loadDeps() {
+  if (!depsPromise) {
+    depsPromise = loadScript('https://cdn.jsdelivr.net/npm/d3@7')
+      .then(() => loadScript('https://cdn.jsdelivr.net/npm/markmap-view'))
+      .then(() => loadScript('https://cdn.jsdelivr.net/npm/markmap-lib@0.18.12/dist/browser/index.iife.js'));
+  }
+  return depsPromise;
+}
+
+// Render one mind map (call ONLY when container is visible)
+function renderMindmap(containerId, markdown) {
+  loadDeps().then(() => {
+    const { Transformer, Markmap } = window.markmap;
+    const { root } = new Transformer().transform(markdown);
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.style.width = '100%';
+    svg.style.height = '600px';
+    document.getElementById(containerId).appendChild(svg);
+    const mm = Markmap.create(svg, { initialExpandLevel: -1 }, root);
+    setTimeout(() => mm.fit(), 100);  // auto-zoom to fit
+  });
+}
 ```
 
 ### Estimated Build Time
