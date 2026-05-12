@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-900 Exam Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#242736;--border:#2e3246;--text:#e1e4ed;--text2:#9ca3b8;--accent:#6c8cff;--accent2:#4e6be0;--green:#34d399;--red:#f87171;--orange:#fbbf24;--purple:#a78bfa;--pink:#f472b6;
+--d1:#6c8cff;--d2:#34d399;--d3:#fbbf24;--d4:#f472b6;--d5:#a78bfa}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+
+/* NAV */
+.nav{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;position:sticky;top:0;z-index:100}
+.nav-brand{font-weight:700;font-size:1.1rem;color:var(--accent);white-space:nowrap;margin-right:8px}
+.nav-btn{padding:8px 16px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:.9rem;white-space:nowrap;transition:.2s}
+.nav-btn:hover{background:var(--surface2);color:var(--text)}
+.nav-btn.active{background:var(--accent);color:#fff}
+
+/* CONTAINER */
+.container{max-width:900px;margin:0 auto;padding:20px 16px}
+.tab{display:none}.tab.active{display:block}
+
+/* DOMAIN FILTERS */
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.filter-btn{padding:6px 14px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;font-size:.82rem;transition:.2s}
+.filter-btn:hover{border-color:var(--text2)}
+.filter-btn.active{color:#fff;border-color:transparent}
+.filter-btn[data-d="1"].active{background:var(--d1)}.filter-btn[data-d="2"].active{background:var(--d2);color:#000}
+.filter-btn[data-d="3"].active{background:var(--d3);color:#000}.filter-btn[data-d="4"].active{background:var(--d4);color:#000}
+.filter-btn[data-d="5"].active{background:var(--d5)}.filter-btn[data-d="all"].active{background:var(--accent)}
+
+/* FLASHCARDS */
+.fc-controls{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.fc-progress{font-size:.85rem;color:var(--text2)}
+.fc-bar{width:100%;height:6px;background:var(--surface2);border-radius:3px;margin-bottom:16px;overflow:hidden}
+.fc-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+.card-scene{perspective:800px;width:100%;max-width:600px;margin:0 auto 20px;min-height:260px}
+.card-flip{width:100%;min-height:260px;position:relative;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.card-flip.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;width:100%;min-height:260px;backface-visibility:hidden;border-radius:16px;padding:32px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.card-front{background:var(--surface);border:1px solid var(--border)}
+.card-back{background:var(--surface2);border:1px solid var(--border);transform:rotateY(180deg)}
+.card-domain{font-size:.75rem;padding:4px 12px;border-radius:12px;color:#fff;margin-bottom:12px;font-weight:600}
+.card-q{font-size:1.15rem;font-weight:600;line-height:1.5}
+.card-a{font-size:1.05rem;line-height:1.5;color:var(--text)}
+.card-num{font-size:.75rem;color:var(--text2);margin-top:12px}
+.fc-actions{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
+.fc-btn{padding:12px 28px;border:none;border-radius:10px;font-size:1rem;cursor:pointer;font-weight:600;transition:.2s}
+.btn-again{background:var(--red);color:#fff}.btn-again:hover{opacity:.85}
+.btn-got{background:var(--green);color:#000}.btn-got:hover{opacity:.85}
+.btn-star{background:var(--orange);color:#000;padding:12px 16px}.btn-star:hover{opacity:.85}
+.fc-mode{display:flex;gap:8px;flex-wrap:wrap}
+.fc-mode-btn{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:.82rem;transition:.2s}
+.fc-mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* QUIZ */
+.quiz-setup{text-align:center;padding:40px 0}
+.quiz-setup h2{margin-bottom:16px;font-size:1.4rem}
+.quiz-setup p{color:var(--text2);margin-bottom:24px}
+.quiz-opt{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.quiz-opt button{padding:12px 24px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);cursor:pointer;font-size:1rem;transition:.2s}
+.quiz-opt button:hover{border-color:var(--accent)}
+.quiz-opt button.active{border-color:var(--accent);background:var(--accent);color:#fff}
+.quiz-start{padding:14px 40px;border:none;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer;font-size:1.05rem;font-weight:600;transition:.2s}
+.quiz-start:hover{background:var(--accent2)}
+.quiz-start:disabled{opacity:.4;cursor:not-allowed}
+.quiz-q{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px}
+.quiz-q h3{margin-bottom:16px;font-size:1.05rem;line-height:1.5;word-wrap:break-word}
+.quiz-q .opts label{display:block;padding:12px 16px;margin-bottom:8px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:.2s}
+.quiz-q .opts label:hover{border-color:var(--text2)}
+.quiz-q .opts label.selected{border-color:var(--accent);background:rgba(108,140,255,.12)}
+.quiz-q .opts label.correct{border-color:var(--green);background:rgba(52,211,153,.12)}
+.quiz-q .opts label.wrong{border-color:var(--red);background:rgba(248,113,113,.12)}
+.quiz-q .explanation{margin-top:16px;padding:16px;background:var(--surface2);border-radius:10px;font-size:.92rem;line-height:1.6;color:var(--text2)}
+.quiz-score{text-align:center;padding:32px;background:var(--surface);border-radius:16px;border:1px solid var(--border)}
+.quiz-score h2{font-size:2rem;margin-bottom:8px}
+.quiz-score .pass{color:var(--green)}.quiz-score .fail{color:var(--red)}
+.quiz-score p{color:var(--text2);margin-bottom:20px}
+.quiz-nav{display:flex;gap:12px;justify-content:center;margin-top:16px}
+.quiz-nav button{padding:10px 24px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer;transition:.2s}
+.quiz-nav button:hover{border-color:var(--accent)}
+.quiz-pbar{width:100%;height:6px;background:var(--surface2);border-radius:3px;margin-bottom:20px;overflow:hidden}
+.quiz-pbar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+
+/* MIND MAPS */
+.mm-section{margin-bottom:16px}
+.mm-header{display:flex;align-items:center;gap:12px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:.2s}
+.mm-header:hover{border-color:var(--text2)}
+.mm-header h3{flex:1;font-size:1rem}
+.mm-header .arrow{transition:transform .3s;color:var(--text2)}
+.mm-header.open .arrow{transform:rotate(90deg)}
+.mm-body{display:none;margin-top:8px;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:var(--surface)}
+.mm-body.open{display:block}
+.mm-body svg{width:100%;height:auto;min-height:400px}
+
+/* PROGRESS */
+.prog-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.prog-card h3{font-size:1rem;margin-bottom:12px}
+.prog-bar-wrap{margin-bottom:10px}
+.prog-bar-label{display:flex;justify-content:space-between;font-size:.82rem;color:var(--text2);margin-bottom:4px}
+.prog-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.prog-bar-fill{height:100%;border-radius:4px;transition:width .3s}
+.prog-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.stat-num{font-size:1.8rem;font-weight:700;color:var(--accent)}
+.stat-label{font-size:.82rem;color:var(--text2)}
+.btn-reset{padding:10px 24px;border:1px solid var(--red);border-radius:8px;background:transparent;color:var(--red);cursor:pointer;font-size:.9rem;transition:.2s}
+.btn-reset:hover{background:var(--red);color:#fff}
+
+/* CHEATSHEETS */
+.cs-section{margin-bottom:12px}
+.cs-header{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:.2s}
+.cs-header:hover{border-color:var(--text2)}
+.cs-header h3{flex:1;font-size:.95rem}
+.cs-body{display:none;padding:20px;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;margin-top:-12px;font-size:.9rem;line-height:1.7}
+.cs-body.open{display:block}
+.cs-body table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem;display:block;overflow-x:auto}
+.cs-body th,.cs-body td{padding:8px 12px;border:1px solid var(--border);text-align:left;white-space:nowrap}
+.cs-body th{background:var(--surface2);font-weight:600}
+.cs-body h4{margin:16px 0 8px;color:var(--accent);font-size:.95rem}
+.cs-body ul{padding-left:20px;margin:8px 0}
+.cs-body strong{color:var(--accent)}
+
+@media(max-width:600px){
+.card-face{padding:24px 16px;min-height:220px}.card-q{font-size:1rem}.card-a{font-size:.95rem}
+.fc-btn{padding:10px 20px;font-size:.9rem}.nav{gap:4px;padding:10px 12px}.nav-btn{padding:6px 12px;font-size:.82rem}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+<span class="nav-brand">AI-900</span>
+<button class="nav-btn active" data-tab="flashcards">Flashcards</button>
+<button class="nav-btn" data-tab="quiz">Quiz</button>
+<button class="nav-btn" data-tab="mindmaps">Mind Maps</button>
+<button class="nav-btn" data-tab="progress">Progress</button>
+<button class="nav-btn" data-tab="cheatsheets">Cheat Sheets</button>
+</nav>
+<div class="container">
+
+<!-- FLASHCARDS TAB -->
+<div id="flashcards" class="tab active">
+<div class="filters" id="fc-filters"></div>
+<div class="fc-controls">
+<div class="fc-mode">
+<button class="fc-mode-btn active" data-mode="all">All Cards</button>
+<button class="fc-mode-btn" data-mode="starred">⭐ Starred</button>
+<button class="fc-mode-btn" data-mode="unmastered">Unmastered</button>
+</div>
+<div class="fc-progress" id="fc-count"></div>
+</div>
+<div class="fc-bar"><div class="fc-bar-fill" id="fc-bar"></div></div>
+<div class="card-scene" id="card-scene">
+<div class="card-flip" id="card-flip">
+<div class="card-face card-front"><div class="card-domain" id="card-domain"></div><div class="card-q" id="card-q"></div><div class="card-num" id="card-num"></div></div>
+<div class="card-face card-back"><div class="card-a" id="card-a"></div></div>
+</div>
+</div>
+<div class="fc-actions">
+<button class="fc-btn btn-again" id="btn-again" title="Review again">✗ Again</button>
+<button class="fc-btn btn-star" id="btn-star" title="Star card">⭐</button>
+<button class="fc-btn btn-got" id="btn-got" title="Got it">✓ Got it</button>
+</div>
+</div>
+
+<!-- QUIZ TAB -->
+<div id="quiz" class="tab">
+<div class="filters" id="qz-filters"></div>
+<div id="quiz-area"></div>
+</div>
+
+<!-- MIND MAPS TAB -->
+<div id="mindmaps" class="tab">
+<div id="mm-area"></div>
+</div>
+
+<!-- PROGRESS TAB -->
+<div id="progress" class="tab">
+<div class="prog-stats" id="prog-stats"></div>
+<div id="prog-bars"></div>
+<button class="btn-reset" id="btn-reset">Reset All Progress</button>
+</div>
+
+<!-- CHEATSHEETS TAB -->
+<div id="cheatsheets" class="tab">
+<div class="filters" id="cs-filters"></div>
+<div id="cs-area"></div>
+</div>
+
+</div>
+<script>
+// ========== DATA ==========
+const DOMAINS=[
+{id:1,name:"AI Workloads & Considerations",weight:"15–20%",color:"var(--d1)"},
+{id:2,name:"Machine Learning on Azure",weight:"15–20%",color:"var(--d2)"},
+{id:3,name:"Computer Vision on Azure",weight:"15–20%",color:"var(--d3)"},
+{id:4,name:"NLP on Azure",weight:"15–20%",color:"var(--d4)"},
+{id:5,name:"Generative AI on Azure",weight:"20–25%",color:"var(--d5)"}
+];
+
+const FLASHCARDS=[
+{id:1,d:1,q:"What are the 5 common AI workload types?",a:"Computer Vision, NLP, Document Processing, Generative AI, Knowledge Mining"},
+{id:2,d:1,q:"Which AI workload: 'Detect defective parts on an assembly line from camera images'?",a:"Computer Vision (object detection)"},
+{id:3,d:1,q:"Which AI workload: 'Determine if customer reviews are positive or negative'?",a:"NLP (sentiment analysis)"},
+{id:4,d:1,q:"Which AI workload: 'Extract line items from scanned invoices'?",a:"Document Processing"},
+{id:5,d:1,q:"Which AI workload: 'Generate marketing copy for a product'?",a:"Generative AI"},
+{id:6,d:1,q:"Which AI workload: 'Search across thousands of PDF documents'?",a:"Knowledge Mining"},
+{id:7,d:1,q:"Which AI workload: 'Convert a recorded meeting to text'?",a:"NLP (speech recognition / STT)"},
+{id:8,d:1,q:"Which AI workload: 'Read handwritten text from a form'?",a:"Document Processing (OCR)"},
+{id:9,d:1,q:"Name all 6 Responsible AI principles.",a:"Fairness, Reliability & Safety, Privacy & Security, Inclusiveness, Transparency, Accountability"},
+{id:10,d:1,q:"Which Responsible AI principle: 'Model produces biased results against a demographic group'?",a:"Fairness"},
+{id:11,d:1,q:"Which Responsible AI principle: 'Users don't know they're interacting with an AI'?",a:"Transparency"},
+{id:12,d:1,q:"Which Responsible AI principle: 'No human reviews the AI's decisions'?",a:"Accountability"},
+{id:13,d:1,q:"Which Responsible AI principle: 'AI crashes under unexpected input'?",a:"Reliability & Safety"},
+{id:14,d:1,q:"Which Responsible AI principle: 'User data stored without consent'?",a:"Privacy & Security"},
+{id:15,d:1,q:"Which Responsible AI principle: 'AI voice assistant doesn't work for users with speech disabilities'?",a:"Inclusiveness"},
+{id:16,d:1,q:"Does Fairness mean treating everyone identically?",a:"No. It means the model doesn't produce biased OUTCOMES for different groups."},
+{id:17,d:1,q:"Who is accountable for AI system decisions — the AI or people?",a:"People. Humans must oversee AI and ensure governance."},
+{id:18,d:1,q:"Does Transparency mean open-sourcing the model?",a:"No. It means users understand how the system makes decisions and its limitations."},
+{id:19,d:1,q:"Difference between Computer Vision and Document Processing?",a:"CV analyzes images/video generally. Document Processing extracts STRUCTURED data from forms/invoices."},
+{id:20,d:1,q:"What is Knowledge Mining?",a:"Extracting insights from large volumes of unstructured data — indexing and searching documents (Azure AI Search)."},
+{id:21,d:1,q:"Name an Azure tool for Responsible AI assessment.",a:"Responsible AI dashboard in Azure Machine Learning."},
+{id:22,d:1,q:"Which AI workload: 'Identify the breed of a dog in a photo'?",a:"Computer Vision (image classification)"},
+{id:23,d:1,q:"Which AI workload: 'Translate an email from Spanish to English'?",a:"NLP (translation)"},
+{id:24,d:1,q:"Which AI workload: 'Create a new image from a text description'?",a:"Generative AI (image generation)"},
+{id:25,d:1,q:"Which AI workload: 'Extract vendor name and total from a receipt'?",a:"Document Processing"},
+{id:26,d:2,q:"What are the 3 core ML techniques for the exam?",a:"Regression, Classification, Clustering"},
+{id:27,d:2,q:"What does Regression predict?",a:"A continuous NUMERIC value (how much, how many)."},
+{id:28,d:2,q:"What does Classification predict?",a:"A discrete CATEGORY (which one, yes/no)."},
+{id:29,d:2,q:"What does Clustering do?",a:"Groups similar data points together WITHOUT predefined labels."},
+{id:30,d:2,q:"Is Regression supervised or unsupervised?",a:"Supervised (requires labeled data)."},
+{id:31,d:2,q:"Is Classification supervised or unsupervised?",a:"Supervised (requires labeled data)."},
+{id:32,d:2,q:"Is Clustering supervised or unsupervised?",a:"Unsupervised (no labels needed)."},
+{id:33,d:2,q:"'Predict the selling price of a house' — which ML technique?",a:"Regression (predicting a number)."},
+{id:34,d:2,q:"'Predict whether a loan will default' — which ML technique?",a:"Classification (binary: yes/no)."},
+{id:35,d:2,q:"'Group customers by similar purchasing behavior' — which technique?",a:"Clustering (finding natural groups, no labels)."},
+{id:36,d:2,q:"'Predict how many units will sell next month' — technique?",a:"Regression (predicting a number)."},
+{id:37,d:2,q:"'Determine if an email is spam or not' — technique?",a:"Classification (binary)."},
+{id:38,d:2,q:"'Predict a student's test score' — technique?",a:"Regression (score is a number)."},
+{id:39,d:2,q:"'Predict whether a student will pass or fail' — technique?",a:"Classification (pass/fail = categories)."},
+{id:40,d:2,q:"'Segment website visitors into groups by behavior' — technique?",a:"Clustering (no predefined groups)."},
+{id:41,d:2,q:"What is a FEATURE in machine learning?",a:"An input variable used for prediction (e.g., square footage, age, income)."},
+{id:42,d:2,q:"What is a LABEL in machine learning?",a:"The output variable being predicted (e.g., price, spam/not-spam)."},
+{id:43,d:2,q:"Does clustering use labels?",a:"No. Clustering is unsupervised — uses only features."},
+{id:44,d:2,q:"What is the TRAINING dataset used for?",a:"Teaching the model — it learns patterns from this data."},
+{id:45,d:2,q:"What is the VALIDATION dataset used for?",a:"Tuning the model during training and checking for overfitting."},
+{id:46,d:2,q:"What is the TEST dataset used for?",a:"Evaluating the final model on completely unseen data."},
+{id:47,d:2,q:"What is OVERFITTING?",a:"Model memorizes training data but performs poorly on new data."},
+{id:48,d:2,q:"What is UNDERFITTING?",a:"Model is too simple to capture patterns — poor on all data."},
+{id:49,d:2,q:"What is Deep Learning?",a:"Subset of ML using neural networks with multiple layers. Excels at unstructured data (images, text, audio)."},
+{id:50,d:2,q:"Deep learning vs traditional ML: which needs more data/compute?",a:"Deep learning requires MORE data and MORE compute."},
+{id:51,d:2,q:"What is the Transformer architecture?",a:"Architecture using self-attention to process all input simultaneously. Foundation of LLMs (GPT, BERT)."},
+{id:52,d:2,q:"What does GPT stand for?",a:"Generative Pre-trained Transformer."},
+{id:53,d:2,q:"What is Automated ML (AutoML)?",a:"Azure ML feature that automatically tries multiple algorithms and hyperparameters. No coding needed."},
+{id:54,d:2,q:"What 3 task types does AutoML support?",a:"Classification, Regression, Time-series forecasting."},
+{id:55,d:2,q:"What is Azure ML Designer?",a:"Drag-and-drop visual interface for building ML pipelines without code."},
+{id:56,d:3,q:"What are the 4 computer vision task types on the exam?",a:"Image Classification, Object Detection, OCR, Facial Detection/Analysis."},
+{id:57,d:3,q:"What does Image Classification do?",a:"Assigns a category label to an ENTIRE image ('this is a cat')."},
+{id:58,d:3,q:"What does Object Detection do?",a:"Identifies objects AND their LOCATIONS (bounding boxes) in an image."},
+{id:59,d:3,q:"What does OCR do?",a:"Extracts printed or handwritten text from images."},
+{id:60,d:3,q:"What does Facial Detection do?",a:"Detects face LOCATIONS in images; can analyze attributes (glasses, head pose)."},
+{id:61,d:3,q:"Key difference: Image Classification vs Object Detection?",a:"Classification = one label for whole image. Object Detection = multiple objects + WHERE (bounding boxes)."},
+{id:62,d:3,q:"'Count the number of cars in a parking lot photo' — which CV task?",a:"Object Detection (needs to find each car)."},
+{id:63,d:3,q:"'Determine if a photo contains a cat or dog' — which CV task?",a:"Image Classification (one label for the whole image)."},
+{id:64,d:3,q:"'Read the text on a street sign' — which CV task?",a:"OCR."},
+{id:65,d:3,q:"'Determine if a person is wearing glasses' — which CV task?",a:"Facial Detection/Analysis."},
+{id:66,d:3,q:"What are the 3 Azure services for computer vision?",a:"Azure AI Vision, Azure AI Face, Azure AI Document Intelligence."},
+{id:67,d:3,q:"What does Azure AI Vision provide?",a:"Image analysis, captions, tags, OCR (Read API), object detection, spatial analysis, smart cropping."},
+{id:68,d:3,q:"What does Azure AI Face provide?",a:"Face detection, attributes, verification (1:1), identification (1:many)."},
+{id:69,d:3,q:"What does Azure AI Document Intelligence provide?",a:"Extract structured data from documents: key-value pairs, tables, line items. Pre-built models for invoices, receipts, IDs."},
+{id:70,d:3,q:"OCR vs Document Intelligence: when to use which?",a:"OCR = raw text from any image. Document Intelligence = STRUCTURED fields from forms/invoices."},
+{id:71,d:3,q:"Face Verification vs Face Identification?",a:"Verification = 2 faces, same person? (1:1). Identification = who from a group? (1:many)."},
+{id:72,d:3,q:"What facial capability did Microsoft RETIRE for Responsible AI?",a:"Inferring emotional states from facial expressions."},
+{id:73,d:3,q:"Does Azure AI Face still detect if someone wears glasses?",a:"Yes — attribute analysis (glasses, head pose, blur) is still available."},
+{id:74,d:3,q:"Does face identification require special approval?",a:"Yes — requires Limited Access approval from Microsoft."},
+{id:75,d:3,q:"What is Image Captioning in Azure AI Vision?",a:"Generates human-readable text descriptions of images (useful for alt text)."},
+{id:76,d:3,q:"What is Spatial Analysis in Azure AI Vision?",a:"Analyzes people movement in video feeds — count, proximity, tracking."},
+{id:77,d:3,q:"'Generate alt-text for website images' — which service?",a:"Azure AI Vision (Image Captioning)."},
+{id:78,d:3,q:"'Extract vendor name, date, total from scanned invoices' — service?",a:"Azure AI Document Intelligence."},
+{id:79,d:3,q:"'Verify identity by comparing selfie to badge photo' — service?",a:"Azure AI Face (face verification, 1:1)."},
+{id:80,d:3,q:"'Count people entering a store from video' — service?",a:"Azure AI Vision (Spatial Analysis)."},
+{id:81,d:4,q:"What are the 7 NLP capabilities tested on the exam?",a:"Key phrase extraction, entity recognition, sentiment analysis, language modeling, speech recognition, speech synthesis, translation."},
+{id:82,d:4,q:"What does Key Phrase Extraction do?",a:"Identifies main concepts/topics in text (flat list of phrases)."},
+{id:83,d:4,q:"What does Entity Recognition (NER) do?",a:"Identifies and CATEGORIZES named entities (Person, Org, Location, Date)."},
+{id:84,d:4,q:"What does Sentiment Analysis do?",a:"Determines emotional tone: positive, negative, neutral per sentence and overall."},
+{id:85,d:4,q:"Key Phrase Extraction vs Entity Recognition?",a:"Key phrases = important topics (no categories). NER = entities WITH categories (Person, Org, Location)."},
+{id:86,d:4,q:"What is Opinion Mining?",a:"Aspect-based sentiment: links sentiment to specific aspects ('food: positive, service: negative')."},
+{id:87,d:4,q:"What is Speech-to-Text (STT)?",a:"Converts spoken audio into written text."},
+{id:88,d:4,q:"What is Text-to-Speech (TTS)?",a:"Converts written text into spoken audio."},
+{id:89,d:4,q:"What is Speech Translation?",a:"Translates spoken audio in one language to another (speech-to-speech)."},
+{id:90,d:4,q:"What is Azure AI Translator?",a:"Translates WRITTEN text between languages (not audio)."},
+{id:91,d:4,q:"'Translate a written document from French to English' — service?",a:"Azure AI Translator (text translation)."},
+{id:92,d:4,q:"'Translate a live spoken conversation' — service?",a:"Azure AI Speech (speech translation). NOT Azure AI Translator."},
+{id:93,d:4,q:"What is Azure AI Language?",a:"Text analytics service: sentiment, key phrases, NER, entity linking, language detection, summarization, CLU, QA."},
+{id:94,d:4,q:"What is Azure AI Speech?",a:"Audio service: STT, TTS, speech translation, speaker recognition, keyword recognition."},
+{id:95,d:4,q:"Name 6 pre-built features of Azure AI Language.",a:"Sentiment analysis, key phrase extraction, NER, entity linking, language detection, text summarization."},
+{id:96,d:4,q:"Name 4 custom features of Azure AI Language.",a:"Question Answering, CLU, custom text classification, custom entity recognition."},
+{id:97,d:4,q:"Pre-built vs Custom: which works without training data?",a:"Pre-built features work immediately with no training data."},
+{id:98,d:4,q:"What is Question Answering in Azure AI Language?",a:"Build a knowledge base from FAQs/docs → answers user questions from that content."},
+{id:99,d:4,q:"What is CLU (Conversational Language Understanding)?",a:"Train a model to understand user INTENTS and extract ENTITIES from conversational input."},
+{id:100,d:4,q:"Question Answering vs CLU?",a:"QA = answers from a knowledge base. CLU = understands intents and entities in commands/conversation."},
+{id:101,d:4,q:"'Build a FAQ bot from company handbook' — feature?",a:"Question Answering."},
+{id:102,d:4,q:"'Understand: book a flight to Paris on Friday' — feature?",a:"CLU (intent: BookFlight, entities: destination=Paris, date=Friday)."},
+{id:103,d:4,q:"'Analyze if product reviews are positive or negative' — service?",a:"Azure AI Language — Sentiment Analysis (pre-built)."},
+{id:104,d:4,q:"'Detect what language an email is written in' — service?",a:"Azure AI Language — Language Detection (pre-built)."},
+{id:105,d:4,q:"'Transcribe a call center recording' — service?",a:"Azure AI Speech — Speech-to-Text."},
+{id:106,d:4,q:"'Read articles aloud for visually impaired users' — service?",a:"Azure AI Speech — Text-to-Speech."},
+{id:107,d:4,q:"'Summarize a long support conversation' — service?",a:"Azure AI Language — Text Summarization (pre-built)."},
+{id:108,d:5,q:"What is Generative AI?",a:"AI that creates NEW content (text, images, code, audio) — powered by LLMs."},
+{id:109,d:5,q:"What are LLMs?",a:"Large Language Models — trained on massive text data to understand and generate human language."},
+{id:110,d:5,q:"What architecture underpins modern LLMs?",a:"Transformer architecture (self-attention, parallel processing)."},
+{id:111,d:5,q:"What does the GPT model family generate?",a:"Text, code, reasoning."},
+{id:112,d:5,q:"What does DALL-E generate?",a:"Images from text descriptions."},
+{id:113,d:5,q:"What does Whisper do?",a:"Speech-to-text (transcription)."},
+{id:114,d:5,q:"What are Embeddings models?",a:"Create vector (numeric) representations of text — used for similarity search."},
+{id:115,d:5,q:"What is a TOKEN in generative AI?",a:"A unit of text (word or subword) that models process."},
+{id:116,d:5,q:"What is a PROMPT?",a:"The input text you send to a generative AI model."},
+{id:117,d:5,q:"What is a COMPLETION?",a:"The model's generated response to a prompt."},
+{id:118,d:5,q:"What does TEMPERATURE control?",a:"Randomness/creativity. 0 = deterministic/focused. 1 = creative/random."},
+{id:119,d:5,q:"Temperature for code generation?",a:"Low (0 to 0.3) — consistent, reliable output."},
+{id:120,d:5,q:"Temperature for creative writing?",a:"High (0.7 to 1.0) — diverse, creative output."},
+{id:121,d:5,q:"What is a SYSTEM MESSAGE?",a:"Instructions that set model behavior, persona, constraints (e.g., 'You are a helpful Azure support agent')."},
+{id:122,d:5,q:"What is ZERO-SHOT learning?",a:"Instructions with NO examples in the prompt."},
+{id:123,d:5,q:"What is FEW-SHOT learning?",a:"A FEW examples (2–5) in the prompt to demonstrate desired behavior."},
+{id:124,d:5,q:"What is RAG (Retrieval-Augmented Generation)?",a:"Retrieve relevant docs, include in prompt — grounds model in real data to reduce hallucinations."},
+{id:125,d:5,q:"What is a HALLUCINATION in AI?",a:"When a model generates confident but factually incorrect information."},
+{id:126,d:5,q:"Primary technique to reduce hallucinations?",a:"RAG — ground responses in retrieved factual documents."},
+{id:127,d:5,q:"What is FINE-TUNING?",a:"Additional training on your specific data to customize the model."},
+{id:128,d:5,q:"System message vs Fine-tuning?",a:"System message = quick behavioral rules at inference. Fine-tuning = deep customization through additional training."},
+{id:129,d:5,q:"What is Azure OpenAI Service?",a:"Microsoft's managed service for OpenAI models with enterprise security and compliance."},
+{id:130,d:5,q:"Azure OpenAI vs public OpenAI: data privacy?",a:"Azure: data NOT used for training. Public: may be used unless opted out."},
+{id:131,d:5,q:"Azure OpenAI vs public OpenAI: networking?",a:"Azure: private endpoints/VNets. Public: internet only."},
+{id:132,d:5,q:"What is Azure AI Foundry?",a:"Unified portal: model catalog, playground, prompt flow, evaluation, deployment."},
+{id:133,d:5,q:"What is the Azure AI Foundry Model Catalog?",a:"Browse/deploy models from OpenAI, Meta (Llama), Mistral, Microsoft (Phi), Hugging Face."},
+{id:134,d:5,q:"What are the 4 content filter categories in Azure OpenAI?",a:"Violence, Hate, Sexual, Self-harm."},
+{id:135,d:5,q:"Are Azure OpenAI content filters applied to input, output, or both?",a:"BOTH — prompts (input) AND completions (output)."},
+{id:136,d:5,q:"What are the 4 content filter severity levels in Azure OpenAI?",a:"Safe, Low, Medium, High."},
+{id:137,d:5,q:"Can you disable Azure OpenAI content filters?",a:"Only with Microsoft approval through a Limited Access application."},
+{id:138,d:5,q:"What is Chain of Thought prompting?",a:"Ask the model to explain reasoning step by step — improves accuracy on complex tasks."},
+{id:139,d:5,q:"When should you use Embeddings models?",a:"Semantic search, finding similar documents, comparing text by meaning (not keyword matching)."},
+{id:140,d:5,q:"Can you rename an Azure AI resource after creation?",a:"No — name and region are immutable. Must delete and recreate."},
+{id:141,d:5,q:"How long does Azure OpenAI retain data for abuse monitoring?",a:"30 days by default. Can be reduced/removed with Microsoft approval."},
+{id:142,d:5,q:"GPT-4 vs GPT-4o: key difference?",a:"GPT-4o is optimized — faster and cheaper with similar capabilities. GPT-4o mini is smallest/cheapest."}
+];
+
+const QUIZ_QUESTIONS=[
+{d:1,q:"Your company analyzes customer support emails to determine if customers are happy or unhappy. Which AI workload type is this?",opts:["Computer Vision","Natural Language Processing","Document Processing","Generative AI"],ans:1,exp:"Analyzing sentiment of text is NLP. Computer Vision is for images. Document Processing extracts structured fields. Generative AI creates content."},
+{d:1,q:"An AI model performs significantly better for one demographic group than another. Which Responsible AI principle is violated?",opts:["Transparency","Accountability","Fairness","Reliability & Safety"],ans:2,exp:"Fairness requires equitable treatment. Different performance across demographics = bias = Fairness violation."},
+{d:1,q:"Customers must be told they're interacting with AI, not a human. Which Responsible AI principle?",opts:["Inclusiveness","Privacy & Security","Transparency","Accountability"],ans:2,exp:"Transparency requires disclosure when users interact with AI."},
+{d:1,q:"A company extracts vendor names, amounts, and dates from scanned invoices. Which AI workload?",opts:["Computer Vision","NLP","Document Processing","Knowledge Mining"],ans:2,exp:"Extracting structured fields from invoices = Document Processing (Azure AI Document Intelligence)."},
+{d:1,q:"A review board overrides AI loan decisions and takes responsibility. Which Responsible AI principle?",opts:["Fairness","Reliability & Safety","Transparency","Accountability"],ans:3,exp:"Accountability = humans are responsible for AI, with oversight and governance."},
+{d:2,q:"Predict the selling price of homes based on features. Which ML technique?",opts:["Classification","Regression","Clustering","Deep learning"],ans:1,exp:"Predicting a numeric value (price) = Regression."},
+{d:2,q:"Determine whether loan applications should be approved or denied. Which ML technique?",opts:["Regression","Clustering","Classification","Anomaly detection"],ans:2,exp:"Predicting a category (approved/denied) = Classification."},
+{d:2,q:"Group customers with similar purchasing behaviors, no predefined categories. Which ML technique?",opts:["Regression","Classification","Clustering","Deep learning"],ans:2,exp:"Grouping without predefined labels = Clustering (unsupervised)."},
+{d:2,q:"In a house price dataset, which column is the label?",opts:["Square footage","Number of bedrooms","Selling price","Neighborhood"],ans:2,exp:"The label is what you predict — selling price. The rest are features."},
+{d:2,q:"Quickly try multiple algorithms without code to find the best model. Which Azure ML capability?",opts:["Azure ML Designer","Automated ML (AutoML)","Azure ML Notebooks","Azure ML Pipelines"],ans:1,exp:"AutoML automatically tries algorithms and hyperparameters, no coding needed."},
+{d:2,q:"Which architecture processes all input text simultaneously and underpins GPT?",opts:["CNN","RNN","Transformer","Decision Tree"],ans:2,exp:"Transformer uses self-attention for parallel processing. GPT = Generative Pre-trained Transformer."},
+{d:3,q:"Count products on a shelf and identify their locations. Which CV task?",opts:["Image classification","Object detection","OCR","Facial detection"],ans:1,exp:"Object detection finds objects + their locations (bounding boxes)."},
+{d:3,q:"Digitize old printed documents by extracting text from scanned images. Which service?",opts:["Azure AI Face","Azure AI Vision — Image Analysis","Azure AI Vision — OCR (Read API)","Azure AI Language"],ans:2,exp:"OCR (Read API) extracts text from images and scanned documents."},
+{d:3,q:"Extract vendor names, dates, line items from scanned invoices. Which service?",opts:["Azure AI Vision","Azure AI Language","Azure AI Document Intelligence","Azure OpenAI"],ans:2,exp:"Document Intelligence extracts structured data (key-value pairs, tables) from invoices."},
+{d:3,q:"Verify a person at a door matches their badge photo. Which capability?",opts:["Image Classification","Face Verification","Face Detection","Object Detection"],ans:1,exp:"Face Verification compares two faces to check if they're the same person (1:1)."},
+{d:3,q:"Microsoft retired which Face service capability for Responsible AI?",opts:["Face detection","Facial attribute analysis (glasses)","Inferring emotional states","Face verification"],ans:2,exp:"Microsoft retired emotion detection from faces. Detection, attributes (glasses), and verification remain."},
+{d:3,q:"Generate human-readable image descriptions for accessibility. Which capability?",opts:["OCR","Image Captioning","Azure AI Face","Text Summarization"],ans:1,exp:"Image Captioning generates text descriptions of images — perfect for alt text."},
+{d:4,q:"Analyze reviews for overall sentiment AND which aspects (food, service) are positive/negative. Which feature?",opts:["Key phrase extraction","Entity recognition","Sentiment analysis with opinion mining","Text summarization"],ans:2,exp:"Opinion mining links sentiments to specific aspects (food: positive, service: negative)."},
+{d:4,q:"Identify all people, organizations, and locations in news articles. Which feature?",opts:["Sentiment analysis","Key phrase extraction","Named entity recognition (NER)","Language detection"],ans:2,exp:"NER identifies and categorizes entities: Person, Organization, Location, Date."},
+{d:4,q:"Convert spoken Japanese to spoken English in real time. Which service?",opts:["Azure AI Translator","Azure AI Language","Azure AI Speech — Speech Translation","Azure AI Speech — STT"],ans:2,exp:"Speech Translation converts spoken audio between languages. Translator is for written text only."},
+{d:4,q:"Build a bot that answers common questions from FAQ documents. Which feature?",opts:["Sentiment analysis","CLU","Question answering","Text summarization"],ans:2,exp:"Question Answering builds a knowledge base from FAQs and answers user questions."},
+{d:4,q:"Understand commands like 'turn on living room lights' — identify intent and entities. Which feature?",opts:["Question Answering","CLU","Speech-to-Text","Key Phrase Extraction"],ans:1,exp:"CLU understands intents (TurnOn) and extracts entities (room=living room, device=lights)."},
+{d:4,q:"Which is a pre-built Azure AI Language feature (no training needed)?",opts:["CLU","Custom text classification","Question answering","Sentiment analysis"],ans:3,exp:"Sentiment analysis is pre-built — works immediately. CLU, custom classification, and QA need your data."},
+{d:5,q:"Deploy GPT-4 with enterprise security, data not used for training, private networking. Which service?",opts:["OpenAI (openai.com)","Azure OpenAI Service","Azure AI Language","Azure ML"],ans:1,exp:"Azure OpenAI = enterprise security, data not used for training, private endpoints."},
+{d:5,q:"Provide 3 example input-output pairs in a prompt to guide the model. What technique?",opts:["Zero-shot","Few-shot","Fine-tuning","Chain of thought"],ans:1,exp:"Few-shot = including examples in the prompt. Zero-shot = no examples. Fine-tuning = additional training."},
+{d:5,q:"Chatbot generates plausible but incorrect answers about company policies. What technique fixes this?",opts:["Increase temperature","RAG (Retrieval-Augmented Generation)","Use a smaller model","Remove system message"],ans:1,exp:"RAG retrieves real documents and includes them in the prompt, grounding responses in facts."},
+{d:5,q:"For deterministic code generation with minimal creativity, what temperature?",opts:["0 (or close to 0)","0.5","0.8","1.0"],ans:0,exp:"Temperature 0 = most deterministic. Higher = more random. For code, use low temperature."},
+{d:5,q:"Unified portal to browse models from multiple providers, test prompts, build prompt flows?",opts:["Azure OpenAI Service","Azure ML","Azure AI Foundry","Azure AI Services"],ans:2,exp:"Azure AI Foundry is the unified portal for model catalog, playground, prompt flow, evaluation."},
+{d:5,q:"What are the 4 content filter categories in Azure OpenAI?",opts:["Violence, hate, sexual, self-harm","Spam, phishing, malware, profanity","Bias, privacy, copyright, misinformation","Harassment, threats, discrimination, fraud"],ans:0,exp:"Azure OpenAI filters: violence, hate, sexual content, self-harm — on both input and output."},
+{d:5,q:"Set a GPT model to only answer Azure questions and decline off-topic ones. Where to configure?",opts:["Temperature","System message","Few-shot examples","Max tokens"],ans:1,exp:"System message sets persona, role, and behavioral constraints for the model."},
+{d:2,q:"A dataset of 10,000 labeled images of skin conditions needs a diagnostic model. The visual patterns are complex and hard to define manually. Which approach?",opts:["Traditional ML with manual feature engineering","Deep learning with a neural network","Clustering","Regression"],ans:1,exp:"Deep learning excels at unstructured data (images) where features are complex. It learns features automatically."},
+{d:5,q:"Users type natural language questions and the system finds semantically similar documents, even without exact keyword matches. Which model type?",opts:["GPT-4","DALL-E","Embeddings","Whisper"],ans:2,exp:"Embeddings create vector representations capturing semantic meaning. Similar meaning = similar vectors = semantic search."},
+{d:5,q:"What are the four content filter severity levels in Azure OpenAI, from least to most severe?",opts:["None, Low, Medium, High","Safe, Low, Medium, High","Info, Warning, Error, Critical","Green, Yellow, Orange, Red"],ans:1,exp:"Azure OpenAI filters use Safe, Low, Medium, High severity levels for each category (violence, hate, sexual, self-harm)."}
+];
+
+const CHEATSHEETS=[
+{d:1,title:"AI Workload Types",content:`<table><tr><th>Workload</th><th>What It Does</th><th>Examples</th></tr><tr><td><strong>Computer Vision</strong></td><td>Interpret images/video</td><td>Classification, object detection, facial recognition, OCR</td></tr><tr><td><strong>NLP</strong></td><td>Understand/generate language</td><td>Sentiment, key phrases, translation, speech</td></tr><tr><td><strong>Document Processing</strong></td><td>Extract info from documents</td><td>Invoice/receipt recognition, ID extraction</td></tr><tr><td><strong>Generative AI</strong></td><td>Create new content</td><td>Chatbots, content creation, code gen, image gen</td></tr><tr><td><strong>Knowledge Mining</strong></td><td>Index & search unstructured data</td><td>Azure AI Search</td></tr></table>`},
+{d:1,title:"Responsible AI Principles",content:`<table><tr><th>Principle</th><th>Description</th></tr><tr><td><strong>Fairness</strong></td><td>No biased outcomes for different groups</td></tr><tr><td><strong>Reliability & Safety</strong></td><td>Works correctly, handles edge cases safely</td></tr><tr><td><strong>Privacy & Security</strong></td><td>Data protected, proper access controls</td></tr><tr><td><strong>Inclusiveness</strong></td><td>Accessible to all regardless of disability</td></tr><tr><td><strong>Transparency</strong></td><td>Users understand decisions and limitations</td></tr><tr><td><strong>Accountability</strong></td><td>HUMANS oversee AI, governance in place</td></tr></table><h4>Traps</h4><ul><li>Fairness ≠ treating everyone identically</li><li>Transparency ≠ open-sourcing the model</li><li>PEOPLE are accountable, not the AI</li><li>Privacy ≠ not collecting any data</li></ul>`},
+{d:2,title:"ML Techniques: Regression vs Classification vs Clustering",content:`<table><tr><th>Factor</th><th>Regression</th><th>Classification</th><th>Clustering</th></tr><tr><td>Predicts</td><td>Numeric value</td><td>Category</td><td>Group membership</td></tr><tr><td>Learning</td><td>Supervised</td><td>Supervised</td><td>Unsupervised</td></tr><tr><td>Labels?</td><td>Yes</td><td>Yes</td><td>No</td></tr><tr><td>Example</td><td>Predict price</td><td>Spam or not</td><td>Customer segments</td></tr></table><h4>Key Trap</h4><ul><li>"Predict the NUMBER who will churn" → Regression</li><li>"Predict WHETHER they will churn" → Classification</li></ul>`},
+{d:2,title:"Features, Labels, and Datasets",content:`<table><tr><th>Term</th><th>Definition</th></tr><tr><td><strong>Feature</strong></td><td>Input variable (sq ft, bedrooms, age)</td></tr><tr><td><strong>Label</strong></td><td>Output being predicted (price, yes/no)</td></tr><tr><td><strong>Training set</strong></td><td>Model learns patterns from this</td></tr><tr><td><strong>Validation set</strong></td><td>Tune model, prevent overfitting</td></tr><tr><td><strong>Test set</strong></td><td>Evaluate final model on unseen data</td></tr></table><h4>Key Facts</h4><ul><li>Clustering has NO label</li><li>Overfitting = memorizes training data, fails on new data</li><li>Underfitting = too simple, poor on all data</li></ul>`},
+{d:2,title:"Deep Learning & Transformers",content:`<table><tr><th>Factor</th><th>Traditional ML</th><th>Deep Learning</th></tr><tr><td>Data needed</td><td>Less</td><td>More</td></tr><tr><td>Compute</td><td>Less</td><td>More (GPUs)</td></tr><tr><td>Feature eng.</td><td>Manual</td><td>Automatic</td></tr><tr><td>Best for</td><td>Structured data</td><td>Unstructured (images, text)</td></tr></table><h4>Transformer</h4><ul><li>Self-attention: processes all input simultaneously</li><li>Foundation of GPT, BERT, LLMs</li><li>GPT = Generative Pre-trained Transformer</li></ul>`},
+{d:2,title:"Azure Machine Learning Capabilities",content:`<table><tr><th>Capability</th><th>Description</th></tr><tr><td><strong>AutoML</strong></td><td>Auto-tries algorithms, no coding</td></tr><tr><td><strong>Designer</strong></td><td>Drag-and-drop visual ML</td></tr><tr><td><strong>Notebooks</strong></td><td>Custom Python/R code</td></tr><tr><td><strong>Responsible AI dashboard</strong></td><td>Fairness, interpretability assessment</td></tr></table><h4>AutoML supports</h4><ul><li>Classification, Regression, Time-series forecasting</li></ul>`},
+{d:3,title:"Computer Vision Task Types",content:`<table><tr><th>Task</th><th>What</th><th>Output</th></tr><tr><td><strong>Image Classification</strong></td><td>Label entire image</td><td>Category</td></tr><tr><td><strong>Object Detection</strong></td><td>Find objects + locations</td><td>Labels + bounding boxes</td></tr><tr><td><strong>OCR</strong></td><td>Extract text from images</td><td>Text strings</td></tr><tr><td><strong>Facial Detection</strong></td><td>Find faces + attributes</td><td>Face locations + attributes</td></tr></table><h4>Critical Distinction</h4><ul><li>Classification = "What IS this image?" (one label)</li><li>Object Detection = "What's IN this image and WHERE?" (multiple + boxes)</li></ul>`},
+{d:3,title:"Azure Vision Services",content:`<table><tr><th>Service</th><th>Capabilities</th></tr><tr><td><strong>Azure AI Vision</strong></td><td>Image analysis, captions, tags, OCR, object detection, spatial analysis</td></tr><tr><td><strong>Azure AI Face</strong></td><td>Face detection, attributes, verification (1:1), identification (1:many)</td></tr><tr><td><strong>Azure AI Document Intelligence</strong></td><td>Structured extraction from forms, invoices, receipts, IDs</td></tr></table><h4>Responsible AI</h4><ul><li>Emotion detection: <strong>RETIRED</strong></li><li>Face identification: requires <strong>Limited Access approval</strong></li><li>Glasses, head pose, blur: still available</li></ul>`},
+{d:4,title:"NLP Capabilities",content:`<table><tr><th>Capability</th><th>What It Does</th></tr><tr><td><strong>Key Phrase Extraction</strong></td><td>Main topics (flat list)</td></tr><tr><td><strong>Entity Recognition</strong></td><td>Named entities WITH categories (Person, Org, etc.)</td></tr><tr><td><strong>Sentiment Analysis</strong></td><td>Positive/negative/neutral + opinion mining</td></tr><tr><td><strong>Speech-to-Text</strong></td><td>Audio → text</td></tr><tr><td><strong>Text-to-Speech</strong></td><td>Text → audio</td></tr><tr><td><strong>Translation</strong></td><td>Text or speech between languages</td></tr></table><h4>Key Distinction</h4><ul><li>Key phrases = topics (no categories)</li><li>NER = entities WITH categories</li></ul>`},
+{d:4,title:"Azure NLP Services",content:`<table><tr><th>Service</th><th>Purpose</th></tr><tr><td><strong>Azure AI Language</strong></td><td>Text analytics (sentiment, NER, key phrases, QA, CLU)</td></tr><tr><td><strong>Azure AI Speech</strong></td><td>Audio (STT, TTS, speech translation, speaker recognition)</td></tr><tr><td><strong>Azure AI Translator</strong></td><td>Written text translation</td></tr></table><h4>Pre-built vs Custom (Azure AI Language)</h4><table><tr><th>Pre-built</th><th>Custom</th></tr><tr><td>Sentiment, Key phrases, NER, Entity linking, Language detection, Summarization</td><td>Question Answering, CLU, Custom classification, Custom NER</td></tr></table><h4>QA vs CLU</h4><ul><li>QA = answers from a knowledge base</li><li>CLU = understands intents + entities in commands</li></ul>`},
+{d:5,title:"Generative AI Concepts",content:`<table><tr><th>Concept</th><th>Definition</th></tr><tr><td><strong>Token</strong></td><td>Unit of text models process</td></tr><tr><td><strong>Prompt</strong></td><td>Input to the model</td></tr><tr><td><strong>Completion</strong></td><td>Model's response</td></tr><tr><td><strong>Temperature</strong></td><td>0=focused, 1=creative</td></tr><tr><td><strong>System message</strong></td><td>Sets model behavior/persona</td></tr><tr><td><strong>Zero-shot</strong></td><td>No examples in prompt</td></tr><tr><td><strong>Few-shot</strong></td><td>2–5 examples in prompt</td></tr><tr><td><strong>RAG</strong></td><td>Retrieve docs → include in prompt → reduce hallucinations</td></tr><tr><td><strong>Fine-tuning</strong></td><td>Additional training on your data</td></tr><tr><td><strong>Hallucination</strong></td><td>Confident but wrong output</td></tr></table>`},
+{d:5,title:"Azure OpenAI & Azure AI Foundry",content:`<table><tr><th>Factor</th><th>Azure OpenAI</th><th>Public OpenAI</th></tr><tr><td>Data privacy</td><td>NOT used for training</td><td>May be used</td></tr><tr><td>Compliance</td><td>SOC 2, HIPAA, GDPR</td><td>Limited</td></tr><tr><td>Networking</td><td>Private endpoints</td><td>Public only</td></tr><tr><td>Content filters</td><td>Built-in, configurable</td><td>Basic moderation</td></tr><tr><td>Access control</td><td>Azure RBAC</td><td>API key only</td></tr></table><h4>Azure AI Foundry</h4><ul><li>Unified portal for AI app development</li><li><strong>Model catalog</strong>: OpenAI, Meta, Mistral, Microsoft, Hugging Face</li><li><strong>Playground</strong>: test prompts interactively</li><li><strong>Prompt flow</strong>: build LLM pipelines</li><li><strong>Content safety</strong>: 4 categories (violence, hate, sexual, self-harm)</li><li>Filters on BOTH input and output</li></ul>`},
+{d:5,title:"Prompt Engineering & Hallucination Reduction",content:`<table><tr><th>Technique</th><th>Description</th></tr><tr><td><strong>System message</strong></td><td>Set role, constraints</td></tr><tr><td><strong>Few-shot</strong></td><td>Examples in prompt</td></tr><tr><td><strong>Chain of thought</strong></td><td>"Show reasoning step by step"</td></tr><tr><td><strong>Temperature</strong></td><td>Low=factual, High=creative</td></tr></table><h4>Reduce Hallucinations</h4><table><tr><th>Technique</th><th>How</th></tr><tr><td><strong>RAG</strong></td><td>Ground in real documents (primary technique)</td></tr><tr><td>System message</td><td>"Only answer from provided data"</td></tr><tr><td>Low temperature</td><td>More deterministic</td></tr><tr><td>Fine-tuning</td><td>Domain-specific training</td></tr></table>`}
+];
+
+const MINDMAPS=[
+{id:1,title:"AI Workloads & Responsible AI",color:"var(--d1)",md:`# AI Workloads & Considerations
+## AI Workload Types
+### Computer Vision
+- Image classification
+- Object detection
+- OCR
+- Facial detection
+### NLP
+- Sentiment analysis
+- Key phrase extraction
+- Entity recognition
+- Speech recognition/synthesis
+- Translation
+### Document Processing
+- Invoice/receipt extraction
+- ID document processing
+- Custom form extraction
+### Generative AI
+- Text generation (GPT)
+- Image generation (DALL-E)
+- Code generation
+- Conversational AI
+### Knowledge Mining
+- Azure AI Search
+- Index & search documents
+## Responsible AI Principles
+### Fairness
+- No biased outcomes
+- Equal treatment across groups
+### Reliability & Safety
+- Works under expected conditions
+- Handles edge cases
+### Privacy & Security
+- Data protection
+- Access controls
+### Inclusiveness
+- Accessible to all
+- Regardless of disability
+### Transparency
+- Users understand decisions
+- Disclose AI interactions
+### Accountability
+- HUMANS oversee AI
+- Governance frameworks`},
+{id:2,title:"Machine Learning on Azure",color:"var(--d2)",md:`# Machine Learning on Azure
+## ML Techniques
+### Regression (Supervised)
+- Predicts numbers
+- Price, temperature, count
+### Classification (Supervised)
+- Predicts categories
+- Binary: yes/no, spam/not
+- Multi-class: type A/B/C
+### Clustering (Unsupervised)
+- Groups similar data
+- No predefined labels
+- Customer segmentation
+## Core Concepts
+### Features & Labels
+- Feature = input variable
+- Label = what you predict
+- Clustering has NO label
+### Dataset Splits
+- Training set (learn patterns)
+- Validation set (tune/prevent overfit)
+- Test set (final evaluation)
+### Deep Learning
+- Neural networks, multiple layers
+- More data, more compute
+- Best for images, text, audio
+### Transformer Architecture
+- Self-attention mechanism
+- Parallel processing
+- Foundation of GPT, BERT
+## Azure ML Capabilities
+### AutoML
+- No code required
+- Tries multiple algorithms
+- Classification, Regression, Forecasting
+### Designer
+- Drag-and-drop visual ML
+### Notebooks
+- Custom Python/R code
+### Deployment
+- Managed online endpoints
+- Batch endpoints
+- Model registry`},
+{id:3,title:"Computer Vision on Azure",color:"var(--d3)",md:`# Computer Vision on Azure
+## Task Types
+### Image Classification
+- One label for whole image
+- "This is a cat"
+### Object Detection
+- Objects + bounding boxes
+- "Car at (x,y,w,h)"
+- Can count objects
+### OCR
+- Extract text from images
+- Printed & handwritten
+- Read API
+### Facial Detection
+- Face locations
+- Attributes: glasses, head pose
+- Verification (1:1)
+- Identification (1:many)
+## Azure Services
+### Azure AI Vision
+- Image analysis & captions
+- OCR (Read API)
+- Object detection
+- Spatial analysis (video)
+- Smart cropping
+### Azure AI Face
+- Face detection
+- Face attributes
+- Face verification (1:1)
+- Face identification (1:many, approval required)
+- Emotion detection RETIRED
+### Azure AI Document Intelligence
+- Structured extraction
+- Pre-built: invoices, receipts, IDs
+- Custom models
+- Key-value pairs & tables`},
+{id:4,title:"NLP on Azure",color:"var(--d4)",md:`# NLP on Azure
+## NLP Capabilities
+### Key Phrase Extraction
+- Main topics (flat list)
+### Entity Recognition (NER)
+- Entities WITH categories
+- Person, Org, Location, Date
+### Sentiment Analysis
+- Positive / Negative / Neutral
+- Opinion mining (aspect-based)
+### Speech Recognition (STT)
+- Audio → Text
+### Speech Synthesis (TTS)
+- Text → Audio
+### Translation
+- Text: Azure AI Translator
+- Speech: Azure AI Speech
+## Azure Services
+### Azure AI Language
+#### Pre-built (no training)
+- Sentiment analysis
+- Key phrase extraction
+- NER & entity linking
+- Language detection
+- Text summarization
+#### Custom (your data)
+- Question Answering
+- CLU (intents + entities)
+- Custom classification
+- Custom NER
+### Azure AI Speech
+- Speech-to-Text
+- Text-to-Speech
+- Speech Translation
+- Speaker Recognition
+- Keyword Recognition
+- Intent Recognition
+### Azure AI Translator
+- Text translation
+- Document translation`},
+{id:5,title:"Generative AI on Azure",color:"var(--d5)",md:`# Generative AI on Azure
+## Models
+### GPT
+- Text, code, reasoning
+- GPT-3.5, GPT-4, GPT-4o
+### DALL-E
+- Images from text
+### Whisper
+- Speech-to-text
+### Embeddings
+- Vector representations
+- Similarity search
+## Key Concepts
+### Prompts & Completions
+- Prompt = input
+- Completion = output
+- Token = unit of text
+### Temperature
+- 0 = deterministic
+- 1 = creative/random
+- Code → low, Creative → high
+### Prompt Engineering
+- System message (set persona)
+- Zero-shot (no examples)
+- Few-shot (2-5 examples)
+- Chain of thought
+### Grounding & RAG
+- RAG reduces hallucinations
+- Retrieve docs → add to prompt
+- Primary anti-hallucination technique
+### Fine-Tuning
+- Additional training on your data
+- Deep domain customization
+- vs System message (quick rules)
+## Azure Services
+### Azure OpenAI Service
+- Enterprise security
+- Data NOT used for training
+- Private endpoints / VNets
+- Content filters (4 categories)
+- Violence, Hate, Sexual, Self-harm
+- Severity levels: Safe, Low, Medium, High
+- Data retained 30 days for abuse monitoring
+### Azure AI Foundry
+- Unified AI development portal
+- Model Catalog (multi-provider)
+- Playground (test prompts)
+- Prompt Flow (LLM pipelines)
+- Evaluation & deployment`}
+];
+
+// ========== STORAGE ==========
+const PREFIX='ai900_';
+const store={
+get(k,d){try{const v=localStorage.getItem(PREFIX+k);return v?JSON.parse(v):d}catch{return d}},
+set(k,v){try{localStorage.setItem(PREFIX+k,JSON.stringify(v))}catch{}},
+};
+
+// ========== STATE ==========
+let starred=store.get('starred',{});
+let mastered=store.get('mastered',{});
+let reviews=store.get('reviews',0);
+let quizHistory=store.get('quizHistory',[]);
+let streak=store.get('streak',{days:0,last:null});
+let fcDomain='all',fcMode='all',fcIdx=0,fcDeck=[];
+let qzDomain='all',qzLen=10,qzActive=false,qzIdx=0,qzScore=0,qzAnswered=[],qzQuestions=[];
+
+function save(){store.set('starred',starred);store.set('mastered',mastered);store.set('reviews',reviews);store.set('quizHistory',quizHistory);store.set('streak',streak)}
+function updateStreak(){const today=new Date().toDateString();if(streak.last!==today){if(streak.last){const d=new Date(streak.last);d.setDate(d.getDate()+1);streak.days=d.toDateString()===today?streak.days+1:1}else{streak.days=1}streak.last=today;save()}}
+
+// ========== NAV ==========
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>{
+document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+b.classList.add('active');
+document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+document.getElementById(b.dataset.tab).classList.add('active');
+if(b.dataset.tab==='progress')renderProgress();
+if(b.dataset.tab==='mindmaps')initMindmaps();
+}));
+
+// ========== FILTERS ==========
+function buildFilters(containerId,onChange){
+const c=document.getElementById(containerId);
+c.innerHTML='<button class="filter-btn active" data-d="all">All</button>'+DOMAINS.map(d=>`<button class="filter-btn" data-d="${d.id}">D${d.id}: ${d.name}</button>`).join('');
+c.querySelectorAll('.filter-btn').forEach(b=>b.addEventListener('click',()=>{
+c.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
+b.classList.add('active');
+onChange(b.dataset.d==='all'?'all':+b.dataset.d);
+}));
+}
+
+// ========== FLASHCARDS ==========
+function buildFcDeck(){
+let cards=FLASHCARDS;
+if(fcDomain!=='all')cards=cards.filter(c=>c.d===fcDomain);
+if(fcMode==='starred')cards=cards.filter(c=>starred[c.id]);
+if(fcMode==='unmastered')cards=cards.filter(c=>!mastered[c.id]);
+fcDeck=cards;fcIdx=0;
+}
+function renderCard(){
+const flip=document.getElementById('card-flip');
+flip.classList.remove('flipped');
+if(!fcDeck.length){
+document.getElementById('card-q').textContent=fcMode==='starred'?'No starred cards. Keep studying!':'No cards match your filters.';
+document.getElementById('card-a').textContent='';
+document.getElementById('card-domain').textContent='';
+document.getElementById('card-num').textContent='';
+document.getElementById('fc-count').textContent='0 / 0';
+document.getElementById('fc-bar').style.width='0%';
+return;
+}
+if(fcIdx>=fcDeck.length)fcIdx=0;
+const c=fcDeck[fcIdx];
+const dom=DOMAINS.find(d=>d.id===c.d);
+document.getElementById('card-domain').textContent=dom.name;
+document.getElementById('card-domain').style.background=dom.color;
+document.getElementById('card-q').textContent=c.q;
+document.getElementById('card-a').textContent=c.a;
+document.getElementById('card-num').textContent=`Card ${fcIdx+1} of ${fcDeck.length}`;
+document.getElementById('fc-count').textContent=`${fcIdx+1} / ${fcDeck.length}`;
+document.getElementById('fc-bar').style.width=((fcIdx+1)/fcDeck.length*100)+'%';
+document.getElementById('btn-star').textContent=starred[c.id]?'★ Starred':'⭐ Star';
+}
+document.getElementById('card-flip').addEventListener('click',()=>document.getElementById('card-flip').classList.toggle('flipped'));
+document.getElementById('btn-again').addEventListener('click',()=>{if(!fcDeck.length)return;const c=fcDeck[fcIdx];starred[c.id]=true;delete mastered[c.id];reviews++;updateStreak();save();fcIdx++;renderCard()});
+document.getElementById('btn-got').addEventListener('click',()=>{if(!fcDeck.length)return;const c=fcDeck[fcIdx];mastered[c.id]=true;reviews++;updateStreak();save();fcIdx++;renderCard()});
+document.getElementById('btn-star').addEventListener('click',()=>{if(!fcDeck.length)return;const c=fcDeck[fcIdx];starred[c.id]=!starred[c.id];save();document.getElementById('btn-star').textContent=starred[c.id]?'★ Starred':'⭐ Star'});
+buildFilters('fc-filters',d=>{fcDomain=d;buildFcDeck();renderCard()});
+document.querySelectorAll('.fc-mode-btn').forEach(b=>b.addEventListener('click',()=>{
+document.querySelectorAll('.fc-mode-btn').forEach(x=>x.classList.remove('active'));
+b.classList.add('active');fcMode=b.dataset.mode;buildFcDeck();renderCard();
+}));
+buildFcDeck();renderCard();
+
+// ========== QUIZ ==========
+function showQuizSetup(){
+qzActive=false;
+const area=document.getElementById('quiz-area');
+area.innerHTML=`<div class="quiz-setup"><h2>Practice Quiz</h2><p>Test your knowledge across all AI-900 domains</p>
+<div class="quiz-opt" id="qz-len"><button data-n="10" class="active">10 Questions</button><button data-n="25">25 Questions</button></div>
+<button class="quiz-start" id="qz-start">Start Quiz</button></div>`;
+area.querySelectorAll('#qz-len button').forEach(b=>b.addEventListener('click',()=>{
+area.querySelectorAll('#qz-len button').forEach(x=>x.classList.remove('active'));
+b.classList.add('active');qzLen=+b.dataset.n;
+}));
+area.querySelector('#qz-start').addEventListener('click',startQuiz);
+}
+function startQuiz(){
+let pool=QUIZ_QUESTIONS.slice();
+if(qzDomain!=='all')pool=pool.filter(q=>q.d===qzDomain);
+for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+qzQuestions=pool.slice(0,Math.min(qzLen,pool.length));
+qzIdx=0;qzScore=0;qzAnswered=new Array(qzQuestions.length).fill(-1);qzActive=true;
+renderQuizQuestion();
+}
+function renderQuizQuestion(){
+if(qzIdx>=qzQuestions.length){showQuizScore();return}
+const q=qzQuestions[qzIdx];
+const dom=DOMAINS.find(d=>d.id===q.d);
+const area=document.getElementById('quiz-area');
+const pct=((qzIdx)/qzQuestions.length*100);
+area.innerHTML=`<div class="quiz-pbar"><div class="quiz-pbar-fill" style="width:${pct}%"></div></div>
+<div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:.85rem;color:var(--text2)">
+<span style="padding:3px 10px;border-radius:12px;background:${dom.color};color:#fff;font-size:.75rem">${dom.name}</span>
+<span>Question ${qzIdx+1} of ${qzQuestions.length}</span></div>
+<div class="quiz-q"><h3>${q.q}</h3><div class="opts">${q.opts.map((o,i)=>`<label data-i="${i}"><input type="radio" name="qopt" style="display:none" value="${i}"> ${String.fromCharCode(65+i)}) ${o}</label>`).join('')}</div>
+<div class="explanation" id="qz-exp" style="display:none"></div></div>
+<div class="quiz-nav"><button id="qz-next" style="display:none">Next →</button></div>`;
+const answered=qzAnswered[qzIdx];
+if(answered>=0){showAnswer(q,answered);return}
+area.querySelectorAll('.opts label').forEach(l=>l.addEventListener('click',()=>{
+if(qzAnswered[qzIdx]>=0)return;
+const i=+l.dataset.i;qzAnswered[qzIdx]=i;
+if(i===q.ans)qzScore++;
+showAnswer(q,i);
+updateStreak();save();
+}));
+}
+function showAnswer(q,chosen){
+const area=document.getElementById('quiz-area');
+area.querySelectorAll('.opts label').forEach(l=>{
+const i=+l.dataset.i;
+if(i===q.ans)l.classList.add('correct');
+else if(i===chosen)l.classList.add('wrong');
+l.classList.add('selected');
+});
+const exp=area.querySelector('#qz-exp');
+exp.style.display='block';
+exp.innerHTML=`<strong>${chosen===q.ans?'✓ Correct!':'✗ Incorrect.'}</strong> ${q.exp}`;
+const next=area.querySelector('#qz-next');
+next.style.display='inline-block';
+next.addEventListener('click',()=>{qzIdx++;renderQuizQuestion()});
+}
+function showQuizScore(){
+const pct=Math.round(qzScore/qzQuestions.length*100);
+const pass=pct>=70;
+quizHistory.push({score:pct,date:new Date().toISOString(),total:qzQuestions.length,correct:qzScore});
+save();
+const area=document.getElementById('quiz-area');
+area.innerHTML=`<div class="quiz-score"><h2 class="${pass?'pass':'fail'}">${pct}%</h2>
+<p>${qzScore} / ${qzQuestions.length} correct — ${pass?'PASS ✓':'FAIL ✗'} (70% needed)</p>
+<div class="quiz-nav"><button id="qz-review">Review Answers</button><button id="qz-retry">New Quiz</button></div></div>`;
+area.querySelector('#qz-retry').addEventListener('click',showQuizSetup);
+area.querySelector('#qz-review').addEventListener('click',()=>{qzIdx=0;renderQuizQuestion()});
+}
+buildFilters('qz-filters',d=>{qzDomain=d;showQuizSetup()});
+showQuizSetup();
+
+// ========== MIND MAPS ==========
+let mmInited=false;
+function initMindmaps(){
+if(mmInited)return;mmInited=true;
+const area=document.getElementById('mm-area');
+area.innerHTML=MINDMAPS.map(m=>`<div class="mm-section"><div class="mm-header" data-id="${m.id}"><span class="arrow">▶</span><h3 style="color:${m.color}">${m.title}</h3><span style="font-size:.8rem;color:var(--text2)">D${m.id}</span></div><div class="mm-body" id="mm-body-${m.id}"><div class="markmap"><script type="text/template">${m.md}<\/script></div></div></div>`).join('');
+area.querySelectorAll('.mm-header').forEach(h=>h.addEventListener('click',()=>{
+h.classList.toggle('open');
+const body=document.getElementById('mm-body-'+h.dataset.id);
+body.classList.toggle('open');
+if(body.classList.contains('open')&&window.markmap&&window.markmap.autoLoader){window.markmap.autoLoader.renderAll()}
+}));
+// load markmap
+if(!document.querySelector('script[src*="markmap"]')){
+const s=document.createElement('script');
+s.src='https://cdn.jsdelivr.net/npm/markmap-autoloader@latest';
+s.onload=()=>{if(window.markmap&&window.markmap.autoLoader)window.markmap.autoLoader.renderAll()};
+document.head.appendChild(s);
+}
+}
+
+// ========== PROGRESS ==========
+function renderProgress(){
+const totalCards=FLASHCARDS.length;
+const masteredCount=Object.keys(mastered).length;
+const starredCount=Object.keys(starred).length;
+const lastScore=quizHistory.length?quizHistory[quizHistory.length-1].score+'%':'—';
+document.getElementById('prog-stats').innerHTML=`
+<div class="stat-card"><div class="stat-num">${masteredCount}</div><div class="stat-label">Cards Mastered</div></div>
+<div class="stat-card"><div class="stat-num">${starredCount}</div><div class="stat-label">Cards Starred</div></div>
+<div class="stat-card"><div class="stat-num">${reviews}</div><div class="stat-label">Total Reviews</div></div>
+<div class="stat-card"><div class="stat-num">${lastScore}</div><div class="stat-label">Last Quiz Score</div></div>
+<div class="stat-card"><div class="stat-num">${streak.days}</div><div class="stat-label">Day Streak 🔥</div></div>
+<div class="stat-card"><div class="stat-num">${quizHistory.length}</div><div class="stat-label">Quizzes Taken</div></div>`;
+const bars=document.getElementById('prog-bars');
+bars.innerHTML='<div class="prog-card"><h3>Mastery by Domain</h3>'+DOMAINS.map(d=>{
+const domCards=FLASHCARDS.filter(c=>c.d===d.id);
+const domMastered=domCards.filter(c=>mastered[c.id]).length;
+const pct=domCards.length?Math.round(domMastered/domCards.length*100):0;
+return`<div class="prog-bar-wrap"><div class="prog-bar-label"><span>D${d.id}: ${d.name}</span><span>${domMastered}/${domCards.length} (${pct}%)</span></div><div class="prog-bar"><div class="prog-bar-fill" style="width:${pct}%;background:${d.color}"></div></div></div>`;
+}).join('')+'</div>';
+}
+document.getElementById('btn-reset').addEventListener('click',()=>{
+if(!confirm('Reset ALL progress? This cannot be undone.'))return;
+starred={};mastered={};reviews=0;quizHistory=[];streak={days:0,last:null};
+save();renderProgress();buildFcDeck();renderCard();
+});
+
+// ========== CHEATSHEETS ==========
+function renderCheatsheets(domain){
+const sheets=domain==='all'?CHEATSHEETS:CHEATSHEETS.filter(s=>s.d===domain);
+const area=document.getElementById('cs-area');
+area.innerHTML=sheets.map((s,i)=>{
+const dom=DOMAINS.find(d=>d.id===s.d);
+return`<div class="cs-section"><div class="cs-header" data-i="${i}"><span class="arrow" style="color:var(--text2)">▶</span><h3><span style="color:${dom.color};font-size:.8rem;margin-right:8px">D${s.d}</span>${s.title}</h3></div><div class="cs-body" id="cs-body-${i}">${s.content}</div></div>`;
+}).join('');
+area.querySelectorAll('.cs-header').forEach(h=>h.addEventListener('click',()=>{
+const body=document.getElementById('cs-body-'+h.dataset.i);
+body.classList.toggle('open');
+h.querySelector('.arrow').textContent=body.classList.contains('open')?'▼':'▶';
+}));
+}
+buildFilters('cs-filters',d=>{renderCheatsheets(d)});
+renderCheatsheets('all');
+
+// ========== KEYBOARD SHORTCUTS ==========
+document.addEventListener('keydown',e=>{
+if(!document.getElementById('flashcards').classList.contains('active'))return;
+if(e.key===' '||e.key==='Enter'){e.preventDefault();document.getElementById('card-flip').classList.toggle('flipped')}
+if(e.key==='ArrowLeft')document.getElementById('btn-again').click();
+if(e.key==='ArrowRight')document.getElementById('btn-got').click();
+if(e.key==='s')document.getElementById('btn-star').click();
+});
+</script>
+</body>
+</html>
