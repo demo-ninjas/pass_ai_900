@@ -1,8 +1,10 @@
-# Exam Prep App — Implementation Plan
+# Exam Prep App — Implementation Plan (v2)
 
 > Use this plan to build an interactive study app for **any** Microsoft certification exam.
 > Start a new project for each exam. Replace `[EXAM-ID]` and `[EXAM-NAME]` throughout.
 > Each phase builds on the previous one — don't skip ahead.
+>
+> **Proven on**: AI-900 (142 flashcards, 33 quiz questions, 5 mind maps, full redesign in ~2 hours)
 
 ---
 
@@ -86,7 +88,7 @@ Review all the content we just created with an expert panel approach:
 
 ### Quality Check
 - [ ] Every "trap" has a scenario + correct answer + "why NOT the other"
-- [ ] Flashcards cover all 6 (or however many) domains proportionally to exam weight
+- [ ] Flashcards cover all domains proportionally to exam weight
 - [ ] No factual errors (verified against docs)
 - [ ] At least 10 "when to choose A vs B" flashcards
 
@@ -95,75 +97,60 @@ Review all the content we just created with an expert panel approach:
 ## Phase 3: Build the Interactive App
 
 ### Goal
-Create a single-file study app that works in any browser, saves progress locally, deploys to GitHub Pages.
+Create a single-file study app with all features, following the design specs in the Architecture section below.
 
 ### Prompt
 ```
-Build a single-file HTML/JS interactive study app (index.html) with a modern dark theme that includes:
+Build a single-file HTML/JS interactive study app (index.html) that includes:
 
-1. Flashcards tab — all cards from flashcards.md with:
+1. Sidebar navigation (Notion/Obsidian style) with icons for each section
+2. Dashboard landing page with:
+   - Study flow cards: Explore (Mind Maps) → Review (Cheat Sheets) → Practice (Flashcards) → Validate (Quiz)
+   - Circular mastery ring (SVG) showing overall % mastered
+   - 30-day activity heat map (GitHub contribution style)
+   - XP badge showing total experience points
+   - Domain mastery progress bars
+3. Flashcards tab with:
    - Domain filter buttons
    - Click-to-flip card animation (CSS 3D transform)
-   - "Got it" ✓ / "Again" ✗ buttons
-   - Auto-star wrong cards, track mastered cards in localStorage
-   - "Review Starred" mode for weak cards
+   - "Got it" ✓ / "Again" ✗ / ⭐ Star buttons
+   - All/Starred/Unmastered mode switcher
    - Progress bar showing position in deck
-
-2. Quiz tab — all questions from practice-questions.md with:
-   - Domain filter buttons
-   - Choose 10 or 25 question quiz length
-   - Immediate feedback with correct answer highlighted + explanation
-   - Score shown as pass/fail (≥70%)
-   - Wrong-answer review panel after quiz completion
-   - Quiz history saved in localStorage
-
-3. Mind Maps tab — one interactive mind map per domain using markmap:
-   - **DO NOT use markmap-autoloader** — it relies on `<script type="text/template">` tags which fail when inserted via innerHTML (browser treats them as inert) and render at 0×0 inside hidden containers
-   - Instead, use the **programmatic API** with three separate CDN scripts loaded on demand:
-     1. `https://cdn.jsdelivr.net/npm/d3@7` (required dependency)
-     2. `https://cdn.jsdelivr.net/npm/markmap-view` (the SVG renderer)
-     3. `https://cdn.jsdelivr.net/npm/markmap-lib@0.18.12/dist/browser/index.iife.js` (markdown→tree transformer, IIFE browser build)
-   - Load these scripts **lazily** (only when user first opens Mind Maps tab) via a promise chain
-   - Render each mind map **only when its section is expanded** (container must be `display:block` with explicit dimensions before calling `Markmap.create`)
-   - Use `new markmap.Transformer().transform(markdown)` to convert the markdown string to `{root}` data
-   - Create an SVG element with **explicit height** (e.g., `height:600px`) — do NOT use `min-height` or `auto` (markmap needs a real size to calculate layout)
-   - Call `markmap.Markmap.create(svg, {initialExpandLevel: -1}, root)` to render with all nodes expanded
-   - Call `mm.fit()` after a short `setTimeout` (50-100ms) to auto-zoom the tree to fit the viewport
-   - **Dark theme fix**: markmap defaults to dark text — override with CSS:
-     ```css
-     .mm-body svg text { fill: var(--text) !important; font-size: 14px !important; }
-     .mm-body svg .markmap-link { stroke-opacity: .6 !important; }
-     ```
-   - Cache rendered maps (track by ID) so re-opening a section doesn't re-render
-   - Full topic hierarchy matching the cheat sheets content
-   - Include all "when to use" decisions as branches in the tree
-
-4. Progress tab — localStorage-based tracking:
-   - Cards mastered vs need review per domain (color-coded progress bars)
-   - Total reviews count
-   - Last quiz score
-   - Study streak counter (consecutive days studied)
-   - Reset all progress button
-
-5. Cheat Sheets tab — collapsible reference sections:
-   - All content from the cheat-sheets/ folder converted to HTML tables
+   - Keyboard shortcuts: Space/Enter=flip, ←=Again, →=Got it, S=Star
+4. Quiz tab with:
+   - Domain filter buttons, choose 10 or 25 question length
+   - Immediate feedback with correct/wrong highlighting + explanation
+   - Score shown as pass/fail (≥70%), quiz history saved
+5. Mind Maps tab — see "Markmap Integration" section below for exact implementation
+6. Cheat Sheets tab with:
+   - Search bar (instant text filter across titles and content)
    - Domain filter buttons
    - Click to expand/collapse each section
+7. Progress tab with:
+   - Cards mastered, starred, total reviews, last quiz, day streak, quizzes taken
+   - Domain mastery bars
+   - Reset all progress button
 
-Requirements:
-- Mobile-friendly (responsive, touch-friendly buttons)
-- Works offline (no server needed, just open the file)
-- No dependencies except markmap CDN
-- All data embedded in the JS (FLASHCARDS array, QUIZ_QUESTIONS array, etc.)
-- Dark theme, clean UI, smooth animations
-- Persistent state via localStorage (prefix keys with exam ID to avoid conflicts)
+Cross-cutting requirements:
+- XP system: +5 per flashcard review, +10 per quiz answer
+- Activity tracking: log review count per day for heat map
+- Zen mode toggle (🧘): hides sidebar/nav for focused study
+- Light/dark theme toggle with localStorage persistence
+- Inter font from Google Fonts CDN
+- Color palette: Deep Navy base (#0F172A), Sage Green success (#76BA99), Indigo accent (#818CF8), Muted Amber attention (#FF8C42)
+- 12px border radius, soft shadows (0 4px 24px rgba(0,0,0,.3)), generous whitespace
+- Mobile: sidebar becomes bottom tab bar at ≤768px
+- localStorage keys prefixed with exam ID (e.g., [exam-id]_starred)
+- All data embedded in JS arrays at the top of the script
 ```
 
-### Expected Output
-```
-[exam-id]/
-├── index.html    ← The app (single file, ~1500 lines)
-└── ... (existing files)
+### Content Data Structure
+```js
+const DOMAINS = [{id, name, weight, color}];
+const FLASHCARDS = [{id, d, q, a}];
+const QUIZ_QUESTIONS = [{d, q, opts, ans, exp}];
+const CHEATSHEETS = [{d, title, content}];  // content is HTML string
+const MINDMAPS = [{id, title, color, md}];  // md is markdown string for markmap
 ```
 
 ### Quality Check
@@ -174,11 +161,14 @@ Requirements:
 - [ ] Domain filters work on all tabs
 - [ ] Progress persists across page refreshes
 - [ ] Looks good on mobile (test at 375px width)
-- [ ] Mind maps render when expanded (not all on page load)
-- [ ] Mind map text is readable on dark background (not black-on-dark)
-- [ ] Mind map SVG has explicit height (not min-height or auto)
-- [ ] Mind map auto-fits/zooms to show full tree when expanded
-- [ ] Mind maps use programmatic API (d3 + markmap-view + markmap-lib), NOT markmap-autoloader
+- [ ] Mind maps render when expanded (not blank)
+- [ ] Mind map text is readable on dark AND light themes
+- [ ] XP increments on card review and quiz answers
+- [ ] Dashboard heat map populates from activity data
+- [ ] Zen mode hides sidebar/chrome
+- [ ] Theme toggle persists across refreshes
+- [ ] Cheat sheet search filters sections in real time
+- [ ] Study flow cards on dashboard navigate to correct tabs
 
 ---
 
@@ -196,7 +186,7 @@ Do a systematic content audit:
 3. Check that every "when to choose A vs B" decision in the cheat sheets has a matching flashcard AND quiz question
 4. Check every topic in the mind maps matches the cheat sheets (full content synchronicity)
 5. Look for topics where we have the "what" but not the "when to choose" — add decision context
-6. Look for topics where definitions are too thin for exam-level questions (e.g., "facetable" should explain WHEN to use it, not just what it means)
+6. Look for topics where definitions are too thin for exam-level questions
 7. Add missing content to fix ALL gaps found
 8. Ensure flashcard IDs are sequential and don't skip
 9. Update README with current content counts
@@ -220,12 +210,16 @@ Catch remaining errors, validate methodology, confirm exam readiness.
 ```
 Final expert panel review across all content:
 
-1. Certification exam coach: Are quiz questions scenario-based like the real exam? Are distractors realistic (wrong answers that SOUND right)? Any missing question types?
-2. Cognitive scientist: Does the study method support active recall and spaced repetition? Is the READ → DRILL → RECALL cycle sound? Any methodology improvements?
-3. Technical expert: Verify all facts against current Microsoft docs. Flag anything outdated or incorrect. Check exact parameter names, model versions, API paths.
-4. UX designer: Is the app mobile-friendly? Any friction in the flashcard flow? Are domain filters intuitive?
+1. Certification exam coach: Are quiz questions scenario-based like the real exam? Are distractors realistic? Any missing question types?
+2. Cognitive scientist: Does the study method support active recall and spaced repetition? Is the READ → DRILL → RECALL cycle sound?
+3. Technical expert: Verify all facts against current Microsoft docs. Flag anything outdated or incorrect.
+4. UX designer: Is the app mobile-friendly? Any friction in the flashcard flow?
 
-Fix everything found. Then give me a summary of:
+Fix everything found. Also:
+- Update study-tracker.md to reference the app (e.g., "Open index.html → Flashcards tab → filter to Domain 1")
+- Ensure study tracker uses generic dates (Day 1, Day 2...)
+
+Then give me a summary of:
 - Total flashcards, quiz questions, cheat sheet sections, mind maps
 - Content coverage per domain vs exam weight
 - Any remaining gaps and whether they matter for passing
@@ -235,7 +229,7 @@ Fix everything found. Then give me a summary of:
 - [ ] No factual errors remaining
 - [ ] Quiz distractors are realistic (not obviously wrong)
 - [ ] Study tracker references the app (not stale file references)
-- [ ] Study tracker uses generic dates (Day 1, Day 2... not specific calendar dates)
+- [ ] Study tracker uses generic dates (Day 1, Day 2...)
 - [ ] All content counts in README are accurate
 
 ---
@@ -251,12 +245,12 @@ Deploy to GitHub Pages and share with team.
 2. Push to https://github.com/[org]/pass_[exam-id].git
 3. Update README.md with:
    - Link to the live GitHub Pages app at the top
-   - Feature table (flashcards, quiz, mind maps, progress, cheat sheets) with counts
+   - Feature table (dashboard, flashcards, quiz, mind maps, cheat sheets, progress) with counts
    - Full repository file structure
-   - "How to Study" section with step-by-step instructions
+   - "How to Study" section with READ → DRILL → RECALL instructions referencing the app
    - Contributing note
 4. Give me a short Teams message I can share with colleagues about the app
-5. Give me a prompt I can use to evaluate whether this app + Microsoft Learn combined is superior to Microsoft Learn alone for passing this exam
+5. Give me a prompt I can use to evaluate whether this app + Microsoft Learn combined is superior to Microsoft Learn alone
 ```
 
 ### Post-Deploy
@@ -264,6 +258,7 @@ Deploy to GitHub Pages and share with team.
 - [ ] Test the live URL: `https://[org].github.io/pass_[exam-id]/`
 - [ ] Test on mobile
 - [ ] Share with team
+- [ ] Clean up backup files (index-v1.html, index-backup.html) if present
 
 ---
 
@@ -273,19 +268,19 @@ When using these prompts, emphasize the key "decision areas" for each exam:
 
 | Exam | High-Value "A vs B" Decisions to Focus On |
 |------|-------------------------------------------|
-| **AZ-104** (Azure Admin) | NSG vs ASG vs Firewall vs WAF, Storage tiers (hot/cool/archive) vs access tiers, VM availability sets vs zones vs scale sets, VPN Gateway vs ExpressRoute vs peering, Azure Policy vs RBAC vs Blueprints, Load Balancer vs App Gateway vs Front Door vs Traffic Manager |
-| **AZ-204** (Azure Developer) | App Service vs Functions vs Container Apps vs AKS, Cosmos DB consistency levels (strong → eventual), Blob lease vs snapshot vs versioning, Azure Cache vs CDN, Service Bus vs Event Grid vs Event Hub vs Queue Storage, Managed Identity vs SAS vs connection string |
+| **AZ-104** (Azure Admin) | NSG vs ASG vs Firewall vs WAF, Storage tiers, VM availability sets vs zones vs scale sets, VPN Gateway vs ExpressRoute vs peering, Azure Policy vs RBAC vs Blueprints, Load Balancer vs App Gateway vs Front Door vs Traffic Manager |
+| **AZ-204** (Azure Developer) | App Service vs Functions vs Container Apps vs AKS, Cosmos DB consistency levels, Blob lease vs snapshot vs versioning, Service Bus vs Event Grid vs Event Hub vs Queue Storage, Managed Identity vs SAS vs connection string |
 | **AZ-305** (Azure Architect) | Availability Zones vs Sets vs Regions, RTO/RPO strategies, Azure AD B2B vs B2C, Hub-spoke vs mesh networking, SQL Database vs SQL MI vs SQL on VM vs Cosmos DB, Synapse vs Databricks vs HDInsight |
-| **AZ-400** (DevOps) | Deployment slots vs blue-green vs canary vs rolling, YAML vs Classic pipelines, Artifacts vs Packages, Branch policies vs pull request triggers, Azure Boards vs GitHub Issues, SonarQube vs WhiteSource vs OWASP ZAP |
-| **AZ-500** (Azure Security) | Key Vault vs managed identity vs service principal, Defender for Cloud plans, Sentinel workbooks vs analytics rules vs playbooks, Conditional Access vs MFA vs PIM, Private Link vs Service Endpoint vs Firewall rules, CMK vs SSE vs TDE |
-| **DP-203** (Data Engineer) | Dedicated SQL vs Serverless SQL vs Spark pool, Star schema vs snowflake, Partition strategies (hash vs round-robin vs range), Data Factory vs Synapse pipelines, Delta Lake vs Parquet vs CSV, Slowly changing dimensions (Type 1 vs 2 vs 3) |
-| **DP-300** (Database Admin) | Azure SQL DB vs Managed Instance vs SQL on VM, DTU vs vCore purchasing, Active geo-replication vs failover groups, TDE vs Always Encrypted vs Dynamic Data Masking, Elastic pools vs single databases, Automated vs long-term backup retention |
-| **AI-900** (AI Fundamentals) | Lighter version of AI-102 — same services at conceptual level. Focus on "which service for which task" and Responsible AI principles |
-| **SC-900** (Security Fundamentals) | Authentication vs authorization, Azure AD vs on-premises AD, Conditional Access vs MFA, Defender vs Sentinel vs Monitor, Zero Trust principles, Compliance Manager vs Purview |
+| **AZ-400** (DevOps) | Deployment slots vs blue-green vs canary vs rolling, YAML vs Classic pipelines, Artifacts vs Packages, Branch policies vs pull request triggers, SonarQube vs WhiteSource vs OWASP ZAP |
+| **AZ-500** (Azure Security) | Key Vault vs managed identity vs service principal, Defender for Cloud plans, Sentinel workbooks vs analytics rules vs playbooks, Conditional Access vs MFA vs PIM, Private Link vs Service Endpoint vs Firewall rules |
+| **DP-203** (Data Engineer) | Dedicated SQL vs Serverless SQL vs Spark pool, Star schema vs snowflake, Partition strategies, Data Factory vs Synapse pipelines, Delta Lake vs Parquet vs CSV, SCD Type 1 vs 2 vs 3 |
+| **DP-300** (Database Admin) | Azure SQL DB vs Managed Instance vs SQL on VM, DTU vs vCore, Active geo-replication vs failover groups, TDE vs Always Encrypted vs Dynamic Data Masking |
+| **AI-900** (AI Fundamentals) | "Which service for which task" and Responsible AI principles. Service confusion: Azure AI Vision vs Face vs Document Intelligence, Azure AI Language vs Speech vs Translator |
+| **SC-900** (Security Fundamentals) | Authentication vs authorization, Azure AD vs on-premises AD, Conditional Access vs MFA, Defender vs Sentinel vs Monitor, Zero Trust principles |
 
 ---
 
-## Architecture Notes
+## Architecture & Design Notes
 
 ### Why Single HTML File?
 - Zero install friction (just open in browser)
@@ -297,18 +292,58 @@ When using these prompts, emphasize the key "decision areas" for each exam:
 
 ### localStorage Key Strategy
 Prefix all keys with exam ID to avoid conflicts if studying for multiple exams:
-- `ai102_starred`, `ai102_mastered`, `ai102_sessions`, `ai102_quizHistory`
-- `az104_starred`, `az104_mastered`, etc.
-
-### Content Data Structure
-All content lives in JS arrays at the top of the script:
-```js
-const DOMAINS = [{id, name, weight, color}];
-const FLASHCARDS = [{id, d, q, a}];
-const QUIZ_QUESTIONS = [{d, q, opts, ans, exp}];
-const CHEATSHEETS = [{d, title, content}];  // content is HTML string
-const MINDMAPS = [{id, title, color, md}];  // md is markdown string for markmap
 ```
+[exam-id]_starred, [exam-id]_mastered, [exam-id]_reviews
+[exam-id]_quizHistory, [exam-id]_streak, [exam-id]_theme
+[exam-id]_xp, [exam-id]_activity
+```
+
+### Visual Design Specifications
+
+Based on cognitive science research for learning tools:
+
+| Element | Spec | Rationale |
+|---------|------|-----------|
+| **Font** | Inter (Google Fonts CDN) | Highly legible at all sizes, modern/clean |
+| **Base dark** | #0F172A (Deep Navy) | Blue linked to focus/productivity |
+| **Base light** | #FDFDFD (Off-white) | Less eye strain than pure white |
+| **Success** | #76BA99 (Sage Green) | Calm progress feeling |
+| **Attention** | #FF8C42 (Muted Amber) | Grabs attention without panic |
+| **Primary accent** | #818CF8 / #6366F1 (Indigo) | Primary actions |
+| **Error/wrong** | #FB7185 (Soft Red) | Not harsh, but clear |
+| **Border radius** | 12px | Modern, friendly feel |
+| **Shadows** | `0 4px 24px rgba(0,0,0,.3)` dark / `.06` light | Cards "float" to signal focus |
+| **Line height** | 1.55–1.6 | Prevents text crowding |
+| **Spacing** | 24–28px content padding, 12px card gaps | Generous whitespace reduces cognitive load |
+
+### Layout Pattern: "Multimodal Knowledge Hub"
+
+The app follows the **Source-to-View** pattern — one dataset rendered in multiple modes:
+
+| Mode | Pattern | UX Purpose |
+|------|---------|------------|
+| Dashboard | Learning Hub | Status overview + study flow guidance |
+| Mind Maps | Infinite Canvas | Big-picture connections |
+| Cheat Sheets | High-Density Grid | Quick reference review |
+| Flashcards | Minimalist Overlay | Active recall focus |
+| Quiz | Progressive Disclosure | Validation testing |
+
+**Study Flow** (shown on dashboard):
+1. **Explore** → Mind Maps (see connections)
+2. **Review** → Cheat Sheets (familiarize)
+3. **Practice** → Flashcards (active recall)
+4. **Validate** → Quiz (test mastery)
+
+### Navigation Pattern
+
+**Desktop**: Fixed left sidebar (220px) with icon + label buttons
+**Mobile (≤768px)**: Bottom tab bar with icons only, sidebar hidden
+
+Features:
+- Dashboard as landing page (not flashcards)
+- Zen Mode toggle (🧘): hides sidebar + top bar chrome for deep focus
+- XP badge in top bar for quiet gamification
+- Theme toggle (🌙/☀️) in top bar
 
 ### Markmap Integration — Pitfalls & Solutions
 
@@ -322,7 +357,7 @@ const MINDMAPS = [{id, title, color, md}];  // md is markdown string for markmap
 
 **Pitfall 2: Correct CDN URLs**
 ```html
-<!-- Load in this exact order via sequential script loading -->
+<!-- Load in this exact order via sequential promise chain -->
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <script src="https://cdn.jsdelivr.net/npm/markmap-view"></script>
 <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.18.12/dist/browser/index.iife.js"></script>
@@ -335,12 +370,12 @@ const MINDMAPS = [{id, title, color, md}];  // md is markdown string for markmap
 **Pitfall 3: SVG needs explicit dimensions BEFORE render**
 - markmap measures the SVG to calculate layout
 - If the SVG is inside a hidden (`display:none`) container, it measures as 0×0
-- **Solution**: Only call `Markmap.create()` AFTER the container is `display:block` and SVG has `height:600px`
+- **Solution**: Only call `Markmap.create()` AFTER the container is `display:block` and SVG has `height:600px` (not `min-height`, not `auto`)
 
 **Pitfall 4: Dark theme text is invisible**
 - markmap renders text in dark colors by default (designed for white backgrounds)
 - On a dark theme, the text is invisible
-- **Solution**: Override with CSS `fill` on `svg text` elements
+- **Solution**: Override with CSS `fill` on `svg text` elements. Also update inline fills when theme toggles.
 
 **Working implementation pattern**:
 ```js
@@ -364,28 +399,85 @@ function loadDeps() {
   return depsPromise;
 }
 
+// Track rendered maps to avoid re-rendering
+const mmRendered = {};
+
 // Render one mind map (call ONLY when container is visible)
-function renderMindmap(containerId, markdown) {
+function renderMindmap(id, containerId, markdown) {
+  if (mmRendered[id]) return;
+  const body = document.getElementById(containerId);
+  body.innerHTML = '<p>Loading mind map…</p>';
   loadDeps().then(() => {
     const { Transformer, Markmap } = window.markmap;
     const { root } = new Transformer().transform(markdown);
+    body.innerHTML = '';
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.style.width = '100%';
-    svg.style.height = '600px';
-    document.getElementById(containerId).appendChild(svg);
+    svg.style.height = '600px';  // MUST be explicit, not min-height
+    body.appendChild(svg);
     const mm = Markmap.create(svg, { initialExpandLevel: -1 }, root);
-    setTimeout(() => mm.fit(), 100);  // auto-zoom to fit
+    setTimeout(() => mm.fit(), 100);  // auto-zoom after layout
+    mmRendered[id] = true;
+  }).catch(e => {
+    body.innerHTML = '<p>Failed to load. Check internet connection.<br>' + e + '</p>';
   });
 }
 ```
 
-### Estimated Build Time
+**Required CSS for theme compatibility**:
+```css
+.mm-body svg text { fill: var(--text) !important; font-size: 14px !important; }
+.mm-body svg .markmap-link { stroke-opacity: .6 !important; }
+```
+
+**Theme toggle must also update mind map text**:
+```js
+// In the theme toggle click handler:
+const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+document.querySelectorAll('.mm-body svg text').forEach(t => { t.style.fill = textColor });
+```
+
+### Gamification Without Distraction
+
+| Feature | Implementation | Purpose |
+|---------|---------------|---------|
+| XP Badge | Top bar, `+5` per card, `+10` per quiz answer | Sense of progress |
+| Day Streak | Consecutive days with activity | Consistency motivation |
+| Heat Map | 30-day grid on dashboard, color-coded by activity | Visual consistency tracking |
+| Mastery Ring | SVG circular progress on dashboard | "How close am I?" at a glance |
+
+All gamification is **non-blocking** — no pop-ups, no level-up screens. Just quiet counters that accumulate.
+
+---
+
+## Estimated Build Time
+
 | Phase | Time |
 |-------|------|
-| Phase 1: Research & Scaffold | 15-20 min |
-| Phase 2: Expert Review & Traps | 10-15 min |
-| Phase 3: Build App | 15-20 min |
-| Phase 4: Content Sync | 10-15 min |
-| Phase 5: Final Review | 5-10 min |
+| Phase 1: Research & Scaffold | 15–20 min |
+| Phase 2: Expert Review & Traps | 10–15 min |
+| Phase 3: Build App | 20–30 min |
+| Phase 4: Content Sync | 10–15 min |
+| Phase 5: Final Review | 5–10 min |
 | Phase 6: Ship | 5 min |
-| **Total** | **~60-90 min per exam** |
+| **Total** | **~75–105 min per exam** |
+
+---
+
+## Final Repository Structure
+
+```
+[exam-id]/
+├── index.html                          ← Interactive study app (open in browser)
+├── README.md                           ← Exam overview, feature table, links
+├── study-guide.md                      ← Exam objectives + MS Learn links
+├── study-tracker.md                    ← 7-day cram plan (references the app)
+├── practice-questions.md               ← Scenario-based questions
+├── flashcards.md                       ← Q&A flashcards (all domains)
+├── traps-and-distinctions.md           ← Common exam traps
+├── exam-prep-implementation-plan.md    ← This file
+└── cheat-sheets/
+    ├── 1-[domain-name].md
+    ├── 2-[domain-name].md
+    └── ... (one per domain)
+```
