@@ -7,7 +7,11 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0f1117;--surface:#1a1d27;--surface2:#242736;--border:#2e3246;--text:#e1e4ed;--text2:#9ca3b8;--accent:#6c8cff;--accent2:#4e6be0;--green:#34d399;--red:#f87171;--orange:#fbbf24;--purple:#a78bfa;--pink:#f472b6;
---d1:#6c8cff;--d2:#34d399;--d3:#fbbf24;--d4:#f472b6;--d5:#a78bfa}
+--d1:#6c8cff;--d2:#34d399;--d3:#fbbf24;--d4:#f472b6;--d5:#a78bfa;
+--card-front-bg:var(--surface);--card-back-bg:var(--surface2);--btn-got-text:#000;--btn-star-text:#000;--quiz-correct-bg:rgba(52,211,153,.12);--quiz-wrong-bg:rgba(248,113,113,.12);--quiz-selected-bg:rgba(108,140,255,.12)}
+[data-theme="light"]{--bg:#f5f6fa;--surface:#ffffff;--surface2:#eef0f5;--border:#d5d8e0;--text:#1a1d27;--text2:#5a6072;--accent:#4e6be0;--accent2:#3b54c4;--green:#059669;--red:#dc2626;--orange:#d97706;--purple:#7c3aed;--pink:#db2777;
+--d1:#4e6be0;--d2:#059669;--d3:#d97706;--d4:#db2777;--d5:#7c3aed;
+--card-front-bg:#ffffff;--card-back-bg:#eef0f5;--btn-got-text:#fff;--btn-star-text:#fff;--quiz-correct-bg:rgba(5,150,105,.1);--quiz-wrong-bg:rgba(220,38,38,.1);--quiz-selected-bg:rgba(78,107,224,.1)}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
 a{color:var(--accent);text-decoration:none}
 
@@ -27,8 +31,8 @@ a{color:var(--accent);text-decoration:none}
 .filter-btn{padding:6px 14px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;font-size:.82rem;transition:.2s}
 .filter-btn:hover{border-color:var(--text2)}
 .filter-btn.active{color:#fff;border-color:transparent}
-.filter-btn[data-d="1"].active{background:var(--d1)}.filter-btn[data-d="2"].active{background:var(--d2);color:#000}
-.filter-btn[data-d="3"].active{background:var(--d3);color:#000}.filter-btn[data-d="4"].active{background:var(--d4);color:#000}
+.filter-btn[data-d="1"].active{background:var(--d1)}.filter-btn[data-d="2"].active{background:var(--d2);color:var(--btn-got-text)}
+.filter-btn[data-d="3"].active{background:var(--d3);color:var(--btn-got-text)}.filter-btn[data-d="4"].active{background:var(--d4);color:var(--btn-got-text)}
 .filter-btn[data-d="5"].active{background:var(--d5)}.filter-btn[data-d="all"].active{background:var(--accent)}
 
 /* FLASHCARDS */
@@ -40,8 +44,8 @@ a{color:var(--accent);text-decoration:none}
 .card-flip{width:100%;min-height:260px;position:relative;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
 .card-flip.flipped{transform:rotateY(180deg)}
 .card-face{position:absolute;width:100%;min-height:260px;backface-visibility:hidden;border-radius:16px;padding:32px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
-.card-front{background:var(--surface);border:1px solid var(--border)}
-.card-back{background:var(--surface2);border:1px solid var(--border);transform:rotateY(180deg)}
+.card-front{background:var(--card-front-bg);border:1px solid var(--border)}
+.card-back{background:var(--card-back-bg);border:1px solid var(--border);transform:rotateY(180deg)}
 .card-domain{font-size:.75rem;padding:4px 12px;border-radius:12px;color:#fff;margin-bottom:12px;font-weight:600}
 .card-q{font-size:1.15rem;font-weight:600;line-height:1.5}
 .card-a{font-size:1.05rem;line-height:1.5;color:var(--text)}
@@ -49,8 +53,8 @@ a{color:var(--accent);text-decoration:none}
 .fc-actions{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
 .fc-btn{padding:12px 28px;border:none;border-radius:10px;font-size:1rem;cursor:pointer;font-weight:600;transition:.2s}
 .btn-again{background:var(--red);color:#fff}.btn-again:hover{opacity:.85}
-.btn-got{background:var(--green);color:#000}.btn-got:hover{opacity:.85}
-.btn-star{background:var(--orange);color:#000;padding:12px 16px}.btn-star:hover{opacity:.85}
+.btn-got{background:var(--green);color:var(--btn-got-text)}.btn-got:hover{opacity:.85}
+.btn-star{background:var(--orange);color:var(--btn-star-text);padding:12px 16px}.btn-star:hover{opacity:.85}
 .fc-mode{display:flex;gap:8px;flex-wrap:wrap}
 .fc-mode-btn{padding:6px 14px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:.82rem;transition:.2s}
 .fc-mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -70,9 +74,9 @@ a{color:var(--accent);text-decoration:none}
 .quiz-q h3{margin-bottom:16px;font-size:1.05rem;line-height:1.5;word-wrap:break-word}
 .quiz-q .opts label{display:block;padding:12px 16px;margin-bottom:8px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:.2s}
 .quiz-q .opts label:hover{border-color:var(--text2)}
-.quiz-q .opts label.selected{border-color:var(--accent);background:rgba(108,140,255,.12)}
-.quiz-q .opts label.correct{border-color:var(--green);background:rgba(52,211,153,.12)}
-.quiz-q .opts label.wrong{border-color:var(--red);background:rgba(248,113,113,.12)}
+.quiz-q .opts label.selected{border-color:var(--accent);background:var(--quiz-selected-bg)}
+.quiz-q .opts label.correct{border-color:var(--green);background:var(--quiz-correct-bg)}
+.quiz-q .opts label.wrong{border-color:var(--red);background:var(--quiz-wrong-bg)}
 .quiz-q .explanation{margin-top:16px;padding:16px;background:var(--surface2);border-radius:10px;font-size:.92rem;line-height:1.6;color:var(--text2)}
 .quiz-score{text-align:center;padding:32px;background:var(--surface);border-radius:16px;border:1px solid var(--border)}
 .quiz-score h2{font-size:2rem;margin-bottom:8px}
@@ -97,6 +101,10 @@ a{color:var(--accent);text-decoration:none}
 .mm-body svg text{fill:var(--text)!important;font-size:14px!important}
 .mm-body svg .markmap-node circle{fill:var(--surface2)!important;stroke:var(--accent)!important}
 .mm-body svg .markmap-link{stroke-opacity:.6!important}
+
+/* THEME TOGGLE */
+.theme-toggle{margin-left:auto;padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;font-size:1rem;transition:.2s;white-space:nowrap;flex-shrink:0}
+.theme-toggle:hover{border-color:var(--text);color:var(--text)}
 
 /* PROGRESS */
 .prog-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
@@ -129,6 +137,7 @@ a{color:var(--accent);text-decoration:none}
 @media(max-width:600px){
 .card-face{padding:24px 16px;min-height:220px}.card-q{font-size:1rem}.card-a{font-size:.95rem}
 .fc-btn{padding:10px 20px;font-size:.9rem}.nav{gap:4px;padding:10px 12px}.nav-btn{padding:6px 12px;font-size:.82rem}
+.theme-toggle{padding:4px 8px;font-size:.9rem}
 }
 </style>
 </head>
@@ -140,6 +149,7 @@ a{color:var(--accent);text-decoration:none}
 <button class="nav-btn" data-tab="mindmaps">Mind Maps</button>
 <button class="nav-btn" data-tab="progress">Progress</button>
 <button class="nav-btn" data-tab="cheatsheets">Cheat Sheets</button>
+<button class="theme-toggle" id="theme-toggle" title="Toggle light/dark mode">🌙</button>
 </nav>
 <div class="container">
 
@@ -621,6 +631,26 @@ const store={
 get(k,d){try{const v=localStorage.getItem(PREFIX+k);return v?JSON.parse(v):d}catch{return d}},
 set(k,v){try{localStorage.setItem(PREFIX+k,JSON.stringify(v))}catch{}},
 };
+
+// ========== THEME ==========
+(function initTheme(){
+const saved=store.get('theme','dark');
+if(saved==='light')document.documentElement.setAttribute('data-theme','light');
+updateThemeIcon();
+})();
+function updateThemeIcon(){
+const isLight=document.documentElement.getAttribute('data-theme')==='light';
+document.getElementById('theme-toggle').textContent=isLight?'☀️':'🌙';
+}
+document.getElementById('theme-toggle').addEventListener('click',()=>{
+const isLight=document.documentElement.getAttribute('data-theme')==='light';
+if(isLight){document.documentElement.removeAttribute('data-theme');store.set('theme','dark')}
+else{document.documentElement.setAttribute('data-theme','light');store.set('theme','light')}
+updateThemeIcon();
+// Update inline fill on any rendered mind map SVG text (CSS !important handles most, this catches inline styles)
+const textColor=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+document.querySelectorAll('.mm-body svg text').forEach(t=>{t.style.fill=textColor});
+});
 
 // ========== STATE ==========
 let starred=store.get('starred',{});
