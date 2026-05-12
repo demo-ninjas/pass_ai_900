@@ -782,8 +782,8 @@ function loadMarkmapDeps(){
 if(mmDepsLoaded)return Promise.resolve();
 if(mmDepsPromise)return mmDepsPromise;
 mmDepsPromise=loadScript('https://cdn.jsdelivr.net/npm/d3@7')
-.then(()=>loadScript('https://cdn.jsdelivr.net/npm/markmap-view@0.18/dist/browser/index.js'))
-.then(()=>loadScript('https://cdn.jsdelivr.net/npm/markmap-lib@0.18/dist/browser/index.js'))
+.then(()=>loadScript('https://cdn.jsdelivr.net/npm/markmap-view'))
+.then(()=>loadScript('https://cdn.jsdelivr.net/npm/markmap-lib@0.18.12/dist/browser/index.iife.js'))
 .then(()=>{mmDepsLoaded=true});
 return mmDepsPromise;
 }
@@ -794,16 +794,17 @@ const m=MINDMAPS.find(x=>x.id===id);if(!m)return;
 const body=document.getElementById('mm-body-'+id);if(!body)return;
 body.innerHTML='<p style="padding:20px;color:var(--text2)">Loading mind map…</p>';
 loadMarkmapDeps().then(()=>{
-const transformer=new markmap.Transformer();
+const {Transformer}=window.markmap;
+const transformer=new Transformer();
 const {root}=transformer.transform(m.md);
 body.innerHTML='';
 const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
 svg.style.width='100%';svg.style.minHeight='400px';
 body.appendChild(svg);
-markmap.Markmap.create(svg,{},root);
+window.markmap.Markmap.create(svg,null,root);
 mmRendered[id]=true;
-}).catch(()=>{
-body.innerHTML='<p style="padding:20px;color:var(--text2)">Mind map requires an internet connection to load the markmap library.</p>';
+}).catch(e=>{
+body.innerHTML='<p style="padding:20px;color:var(--red)">Failed to load mind map. Check your internet connection.<br><small>'+e+'</small></p>';
 });
 }
 
