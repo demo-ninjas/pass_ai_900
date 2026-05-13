@@ -4,7 +4,7 @@
 > Start a new project for each exam. Replace `[EXAM-ID]` and `[EXAM-NAME]` throughout.
 > Each phase builds on the previous one — don't skip ahead.
 >
-> **Proven on**: AI-900 (142 flashcards, 33 quiz questions, 5 mind maps, full redesign in ~2 hours)
+> **Proven on**: AI-900 (146 flashcards, 81 quiz questions, 5 mind maps, full redesign + coverage audit in ~3 hours)
 
 ---
 
@@ -18,15 +18,19 @@ Build the knowledge base from official Microsoft sources.
 I need to pass [EXAM-ID]: [EXAM-NAME]. My workspace is empty at c:\source\[exam-id].
 
 1. Research the official exam page and study guide on learn.microsoft.com
-2. Create a README.md with exam overview, domains, weights, and key links
-3. Create a detailed study-guide.md with every exam objective and MS Learn module links
-4. Create a study-tracker.md with a day-by-day cram plan using READ → DRILL → RECALL methodology (make it generic — no hardcoded dates, use "Day 1, Day 2" etc. relative to exam day)
-5. Create a cheat-sheets/ folder with one detailed cheat sheet per exam domain, including:
+2. Create a content_covered_in_the_exam.md with every testable objective from the official skills measured page (formatted with numbered bullets — this becomes the source of truth for Phase 4 coverage audit)
+3. Create a README.md with exam overview, domains, weights, and key links
+4. Create a detailed study-guide.md with every exam objective and MS Learn module links
+5. Create a study-tracker.md with a day-by-day cram plan using READ → DRILL → RECALL methodology (make it generic — no hardcoded dates, use "Day 1, Day 2" etc. relative to exam day)
+6. Create a cheat-sheets/ folder with one detailed cheat sheet per exam domain, including:
    - Exact service names, model names, API parameters, SDK classes
    - REST endpoint patterns and URL formats
    - "Numbers to remember" section (minimums, limits, defaults, timeouts)
    - Decision tables: "when to use A vs B" for every choice the exam tests
-6. Create a practice-questions.md with 25+ scenario-based multiple choice questions with answers and explanations
+7. Create a practice-questions.md with 80+ scenario-based multiple choice questions with answers and explanations, including:
+   - At least 5 multi-select questions ("Select two")
+   - At least 5 "minimize effort" constraint questions
+   - At least 1 question per testable objective
 
 Focus on EXAM-LEVEL detail — exact parameter names, model versions, config values, CLI commands. Not conceptual overviews. The exam tests specifics.
 ```
@@ -35,6 +39,7 @@ Focus on EXAM-LEVEL detail — exact parameter names, model versions, config val
 ```
 [exam-id]/
 ├── README.md
+├── content_covered_in_the_exam.md
 ├── study-guide.md
 ├── study-tracker.md
 ├── practice-questions.md
@@ -148,10 +153,13 @@ Cross-cutting requirements:
 ```js
 const DOMAINS = [{id, name, weight, color}];
 const FLASHCARDS = [{id, d, q, a}];
-const QUIZ_QUESTIONS = [{d, q, opts, ans, exp}];
+const QUIZ_QUESTIONS = [{d, q, opts, ans, exp}];  // ans: number (single) or array (multi-select)
 const CHEATSHEETS = [{d, title, content}];  // content is HTML string
 const MINDMAPS = [{id, title, color, md}];  // md is markdown string for markmap
 ```
+
+> **Multi-select quiz questions**: Set `ans` to an array of 0-based indices, e.g. `ans:[1,3]`.
+> The quiz renderer must handle both `typeof ans === 'number'` and `Array.isArray(ans)`.
 
 ### Quality Check
 - [ ] All flashcards from flashcards.md are in the FLASHCARDS array
@@ -172,32 +180,65 @@ const MINDMAPS = [{id, title, color, md}];  // md is markdown string for markmap
 
 ---
 
-## Phase 4: Content Sync & Gap Analysis
+## Phase 4: 100% Coverage Audit & Gap Fill
 
 ### Goal
-Ensure 100% content synchronicity between markdown files, app data, and mind maps.
+Achieve 100% coverage of every testable exam objective with both a flashcard AND a quiz question. Ensure proportionality across domains.
 
 ### Prompt
 ```
-Do a systematic content audit:
+Do a systematic 100% coverage audit:
 
-1. Count flashcards, quiz questions, and cheat sheet sections per domain
-2. Identify any domain underrepresented relative to its exam weight
-3. Check that every "when to choose A vs B" decision in the cheat sheets has a matching flashcard AND quiz question
-4. Check every topic in the mind maps matches the cheat sheets (full content synchronicity)
-5. Look for topics where we have the "what" but not the "when to choose" — add decision context
-6. Look for topics where definitions are too thin for exam-level questions
-7. Add missing content to fix ALL gaps found
-8. Ensure flashcard IDs are sequential and don't skip
+1. Read content_covered_in_the_exam.md and number every bullet point (the testable objectives)
+2. For EACH numbered bullet, check:
+   - Is there at least one flashcard covering it? (cite the FC ID)
+   - Is there at least one quiz question covering it? (cite the quiz Q)
+3. Produce a coverage table:
+   | # | Objective | FC? | Quiz? | Status (✅/🟡/🔴) |
+4. For every 🟡 (partial) or 🔴 (missing) item:
+   - Add a flashcard to the FLASHCARDS array
+   - Add a quiz question to the QUIZ_QUESTIONS array
+   - For "minimize effort" scenarios, add a quiz Q where the constraint changes the answer
+   - For "select two" scenarios, add a multi-select quiz Q (ans as array)
+5. Count flashcards and quiz questions per domain
+6. Check proportionality vs exam weight (±20% tolerance)
+7. If any domain is significantly over/under-represented, rebalance
+8. Ensure flashcard IDs are sequential
 9. Update README with current content counts
 ```
 
+### Coverage Targets
+| Metric | Minimum |
+|--------|---------|
+| Exam objectives with ✅ (FC + Quiz) | **100%** |
+| Flashcards per domain | Proportional to exam weight ±20% |
+| Quiz questions total | **80+** (at least 1 per objective) |
+| Multi-select quiz questions | **At least 5** |
+| "Minimize effort" constraint questions | **At least 5** |
+| Scenario-based (not definitional) quiz questions | **≥75%** |
+
+### Lessons Learned (AI-900 Build)
+- Initial build produced 142 flashcards and 33 quiz questions — seemed like plenty
+- Coverage audit revealed 2 objectives with **zero** coverage (🔴) and 9 with only partial coverage (🟡)
+- Missing: model management/deployment capabilities, language modeling, several Responsible AI quiz scenarios
+- Multi-select and "minimize effort" question types were completely absent
+- After audit: 146 flashcards, 81 quiz questions, 6 multi-select, 10 minimize-effort — 100% coverage
+- **Key insight**: Always audit against the official skills-measured doc, not against your own content
+- **Bug found**: One quiz entry in index.html had `{id:4,...}` instead of `{d:4,...}` — always verify the `d` (domain) property exists on every quiz entry
+- **Sync matters**: flashcards.md, practice-questions.md, AND index.html FLASHCARDS/QUIZ_QUESTIONS arrays must all be updated together
+
 ### Quality Check
+- [ ] Coverage table shows ✅ for every bullet in the skills measured doc
+- [ ] Zero 🔴 (missing) items remain
+- [ ] Zero 🟡 (partial) items remain
 - [ ] Flashcard count per domain is proportional to exam weight (±20%)
-- [ ] Every decision table in cheat sheets has matching flashcard(s) + quiz Q(s)
-- [ ] Mind map nodes match cheat sheet headings 1:1
-- [ ] No "thin" definitions remaining — all have "when to use" context
+- [ ] Quiz includes both single-answer and multi-select question types
+- [ ] Quiz includes "minimize effort" constraint questions
 - [ ] README content counts match actual counts
+- [ ] Flashcard IDs are sequential (no gaps or duplicates)
+- [ ] index.html FLASHCARDS array count matches flashcards.md count
+- [ ] index.html QUIZ_QUESTIONS array count matches practice-questions.md count
+- [ ] Every QUIZ_QUESTIONS entry has `d` (domain), not `id`
 
 ---
 
@@ -457,10 +498,12 @@ All gamification is **non-blocking** — no pop-ups, no level-up screens. Just q
 | Phase 1: Research & Scaffold | 15–20 min |
 | Phase 2: Expert Review & Traps | 10–15 min |
 | Phase 3: Build App | 20–30 min |
-| Phase 4: Content Sync | 10–15 min |
+| Phase 4: Coverage Audit & Gap Fill | 15–25 min |
 | Phase 5: Final Review | 5–10 min |
 | Phase 6: Ship | 5 min |
-| **Total** | **~75–105 min per exam** |
+| **Total** | **~75–115 min per exam** |
+
+> **Note**: Phase 4 took longer than expected on AI-900 because the initial build had only 33 quiz questions. The coverage audit added 48 new questions. Starting Phase 1 with a higher question target (80+) would reduce Phase 4 work.
 
 ---
 
@@ -470,9 +513,10 @@ All gamification is **non-blocking** — no pop-ups, no level-up screens. Just q
 [exam-id]/
 ├── index.html                          ← Interactive study app (open in browser)
 ├── README.md                           ← Exam overview, feature table, links
+├── content_covered_in_the_exam.md      ← Official skills measured (audit source of truth)
 ├── study-guide.md                      ← Exam objectives + MS Learn links
 ├── study-tracker.md                    ← 7-day cram plan (references the app)
-├── practice-questions.md               ← Scenario-based questions
+├── practice-questions.md               ← Scenario-based questions (80+)
 ├── flashcards.md                       ← Q&A flashcards (all domains)
 ├── traps-and-distinctions.md           ← Common exam traps
 ├── exam-prep-implementation-plan.md    ← This file
