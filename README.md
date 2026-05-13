@@ -6,8 +6,8 @@
 
 | Feature | What it does | Count |
 |---------|-------------|-------|
-| **Flashcards** | Click-to-flip cards with Got it / Again tracking, starred review mode | 142 cards |
-| **Quiz** | Scenario-based MCQs with instant feedback, explanations, score history | 33 questions |
+| **Flashcards** | Click-to-flip cards with Got it / Again tracking, starred review mode | 146 cards |
+| **Quiz** | Scenario-based MCQs with instant feedback, explanations, score history | 81 questions |
 | **Mind Maps** | Interactive topic trees per domain (powered by markmap) | 5 maps |
 | **Progress** | Mastery bars per domain, streak counter, quiz history | localStorage |
 | **Cheat Sheets** | Collapsible reference tables with decision guides | 12 sections |
@@ -64,8 +64,8 @@ Just open `index.html` in any browser — works offline, no install needed.
 | `README.md` | This file — exam overview and links |
 | `study-guide.md` | Every exam objective with MS Learn module links |
 | `study-tracker.md` | Day-by-day cram plan (READ → DRILL → RECALL) |
-| `practice-questions.md` | 33 scenario-based multiple choice questions |
-| `flashcards.md` | 142 Q&A flashcards across all 5 domains |
+| `practice-questions.md` | 81 scenario-based multiple choice questions |
+| `flashcards.md` | 146 Q&A flashcards across all 5 domains |
 | `traps-and-distinctions.md` | Tricky confusions, parameter traps, and "why NOT the other answer" scenarios |
 | `index.html` | Interactive study app (flashcards, quiz, mind maps, progress, cheat sheets) |
 | `cheat-sheets/1-ai-workloads-and-considerations.md` | Domain 1 cheat sheet |
@@ -78,8 +78,8 @@ Just open `index.html` in any browser — works offline, no install needed.
 
 | Content Type | Count | Details |
 |-------------|-------|----------|
-| Flashcards | 142 | D1: 25, D2: 30, D3: 25, D4: 27, D5: 35 |
-| Practice Questions | 33 | D1: 5, D2: 7, D3: 6, D4: 6, D5: 9 |
+| Flashcards | 146 | D1: 25, D2: 33, D3: 25, D4: 28, D5: 35 |
+| Practice Questions | 81 | D1: 15, D2: 15, D3: 14, D4: 14, D5: 23 |
 | Cheat Sheets | 5 | One per domain (12 sections in app) |
 | Mind Maps | 5 | One interactive map per domain |
 | Traps & Distinctions | 7 sections | Service confusions, ML traps, CV traps, GenAI traps, Responsible AI traps, lifecycle traps, number traps |
