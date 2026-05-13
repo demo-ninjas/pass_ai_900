@@ -489,6 +489,114 @@ document.querySelectorAll('.mm-body svg text').forEach(t => { t.style.fill = tex
 
 All gamification is **non-blocking** — no pop-ups, no level-up screens. Just quiet counters that accumulate.
 
+### Verification & Quality Check Process
+
+> Run these checks after Phase 4 (coverage audit) and before Phase 6 (ship). Every check must pass before pushing.
+
+#### 1. Flashcard Count & Sequential IDs
+```powershell
+# Count total flashcard rows in markdown
+Select-String -Path flashcards.md -Pattern "^\| \d+ \|" | Measure-Object | Select-Object -ExpandProperty Count
+
+# Verify IDs are sequential with no gaps
+$nums = @(); Select-String -Path flashcards.md -Pattern "^\| (\d+) \|" | ForEach-Object {
+    $nums += [int]$_.Matches[0].Groups[1].Value
+}
+Write-Host "Range: $($nums[0])-$($nums[-1])"
+$ok = $true; for ($i = 1; $i -lt $nums.Count; $i++) {
+    if ($nums[$i] -ne $nums[$i-1]+1) { $ok = $false; Write-Host "Gap: $($nums[$i-1])->$($nums[$i])" }
+}
+if ($ok) { Write-Host "Sequential: OK" }
+```
+
+#### 2. Quiz Question Count & Sequential Numbering
+```powershell
+# Count total questions in markdown
+Select-String -Path practice-questions.md -Pattern "^### Question" | Measure-Object | Select-Object -ExpandProperty Count
+
+# Verify sequential numbering
+$nums = @(); Select-String -Path practice-questions.md -Pattern "^### Question (\d+)" | ForEach-Object {
+    $nums += [int]$_.Matches[0].Groups[1].Value
+}
+Write-Host "Range: $($nums[0])-$($nums[-1])"
+$ok = $true; for ($i = 1; $i -lt $nums.Count; $i++) {
+    if ($nums[$i] -ne $nums[$i-1]+1) { $ok = $false; Write-Host "Gap: $($nums[$i-1])->$($nums[$i])" }
+}
+if ($ok) { Write-Host "Sequential: OK" }
+```
+
+#### 3. index.html Data Array Counts Match Markdown
+```powershell
+# Flashcards in FLASHCARDS array
+$c = Get-Content index.html -Raw
+$s = $c.IndexOf('const FLASHCARDS=['); $e = $c.IndexOf('];', $s)
+$sec = $c.Substring($s, $e - $s + 2)
+Write-Host "FLASHCARDS array: $(([regex]::Matches($sec, '\{id:\d+')).Count)"
+
+# Quiz questions in QUIZ_QUESTIONS array
+$s2 = $c.IndexOf('const QUIZ_QUESTIONS=['); $e2 = $c.IndexOf('];', $s2)
+$sec2 = $c.Substring($s2, $e2 - $s2)
+Write-Host "QUIZ_QUESTIONS array: $(([regex]::Matches($sec2, '\{d:\d')).Count)"
+```
+
+#### 4. Multi-Select & Minimize-Effort Question Types
+```powershell
+# Multi-select questions (ans is an array)
+$c = Get-Content index.html -Raw
+$s = $c.IndexOf('const QUIZ_QUESTIONS=['); $e = $c.IndexOf('];', $s)
+$sec = $c.Substring($s, $e - $s)
+Write-Host "Multi-select: $(([regex]::Matches($sec, 'ans:\[\d')).Count)"
+
+# "Minimize effort" / "least effort" constraint questions
+(Select-String -Path practice-questions.md -Pattern "(?i)(minimum|least|minimize).*(effort|development|configuration)" |
+    Measure-Object).Count
+```
+
+#### 5. Per-Domain Distribution
+```powershell
+# Quiz questions per domain
+$lines = Get-Content practice-questions.md; $cd = 0; $dc = @{}
+foreach ($l in $lines) {
+    if ($l -match '^## Domain (\d)') { $cd = [int]$Matches[1] }
+    if ($l -match '^### Question ') {
+        if (-not $dc.ContainsKey($cd)) { $dc[$cd] = 0 }; $dc[$cd]++
+    }
+}
+$dc.GetEnumerator() | Sort-Object Name | ForEach-Object { Write-Host "D$($_.Key): $($_.Value)" }
+```
+
+#### 6. Bug Check: Every QUIZ_QUESTIONS Entry Has `d` (Not `id`)
+```powershell
+# Should return 0 — any match means a bug
+$c = Get-Content index.html -Raw
+$s = $c.IndexOf('const QUIZ_QUESTIONS=['); $e = $c.IndexOf('];', $s)
+$sec = $c.Substring($s, $e - $s)
+$bugs = ([regex]::Matches($sec, '\{id:\d')).Count
+if ($bugs -eq 0) { Write-Host "No id bugs found" } else { Write-Host "BUG: $bugs entries have {id:} instead of {d:}" }
+```
+
+#### 7. Domain Headers Match Actual Content
+```powershell
+# Flashcard domain headers
+Select-String -Path flashcards.md -Pattern "^## Domain" | ForEach-Object { $_.Line }
+
+# Quiz domain headers
+Select-String -Path practice-questions.md -Pattern "^## Domain" | ForEach-Object { $_.Line }
+```
+
+#### Expected Results (AI-900 Reference)
+| Check | Expected |
+|-------|----------|
+| Flashcard rows (markdown) | 146 |
+| Flashcard IDs sequential | 1–146, no gaps |
+| Quiz questions (markdown) | 81 |
+| Quiz IDs sequential | 1–81, no gaps |
+| FLASHCARDS array (index.html) | 146 |
+| QUIZ_QUESTIONS array (index.html) | 81 |
+| Multi-select questions | ≥5 (AI-900: 6) |
+| Minimize-effort questions | ≥5 (AI-900: 10) |
+| `{id:}` bugs in QUIZ_QUESTIONS | 0 |
+
 ---
 
 ## Estimated Build Time
