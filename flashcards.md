@@ -110,7 +110,7 @@
 
 ---
 
-## Domain 4: NLP on Azure (Cards 84–112)
+## Domain 4: NLP on Azure (Cards 84–111)
 
 | # | Question | Answer |
 |---|----------|--------|
@@ -145,7 +145,7 @@
 
 ---
 
-## Domain 5: Generative AI on Azure (Cards 113–146)
+## Domain 5: Generative AI on Azure (Cards 112–146)
 
 | # | Question | Answer |
 |---|----------|--------|
